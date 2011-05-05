@@ -136,6 +136,8 @@ respectively:
   {"year":1970,"month":1,"day":1}
 >>
   
+  Source code for this section:
+https://github.com/MyLifeLabs/atdgen-tutorial/tree/master/hello
   
 
 4  Inspecting and pretty-printing JSON
@@ -182,7 +184,7 @@ object per line, can also be pretty-printed with ydump. Input:
 >>
   
   From an OCaml program, pretty-printing can be done with
-Yojson.Safe.prettify which has the following signature:
+Yojson.Safe.prettify  which has the following signature:
 <<
   val prettify : string -> string
 >>
@@ -211,6 +213,8 @@ some predefined JSON data (file prettify.ml):
   ]
 >>
   
+  Source code for this section:
+https://github.com/MyLifeLabs/atdgen-tutorial/tree/master/pretty-json
   
 
 5  Inspecting biniou data
@@ -341,6 +345,8 @@ anymore (for this user on this machine). The following now works:
           <"Node": (<"Empty">, 5, <"Empty">)>)>)>
 >>
   
+  Source code for this section:
+https://github.com/MyLifeLabs/atdgen-tutorial/tree/master/inspect-biniou
   
 
 6  Optional fields and default values
@@ -718,6 +724,8 @@ Resume_v module:
   ]
 >>
   
+  Source code for this section:
+https://github.com/MyLifeLabs/atdgen-tutorial/tree/master/validate
   
 
 9  Modularity: referring to type definitions from another ATD file
@@ -773,6 +781,8 @@ from the
 <<{"name":"foo","data":[{"x":1,"y":2},{"x":3,"y":4}]}
 >>
   
+  Source code for this section:
+https://github.com/MyLifeLabs/atdgen-tutorial/tree/master/modularity
   
 
 10  Integration with ocamldoc

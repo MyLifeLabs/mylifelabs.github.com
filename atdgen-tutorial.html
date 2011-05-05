@@ -136,7 +136,8 @@ $ ocamlfind ocamlopt -o hello hello_t.cmx hello_j.cmx hello.cmx \
     -package atdgen -linkpkg
 </PRE><P>And finally we run our <TT>hello</TT> program:</P><PRE CLASS="verbatim">$ ./hello
 {"year":1970,"month":1,"day":1}
-</PRE><!--TOC section Inspecting and pretty-printing JSON-->
+</PRE><P>Source code for this section:
+<A HREF="https://github.com/MyLifeLabs/atdgen-tutorial/tree/master/hello"><TT>https://github.com/MyLifeLabs/atdgen-tutorial/tree/master/hello</TT></A></P><!--TOC section Inspecting and pretty-printing JSON-->
 <H2 CLASS="section"><!--SEC ANCHOR --><A NAME="htoc4">4</A>  Inspecting and pretty-printing JSON</H2><!--SEC END --><P>Input JSON data:</P><PRE CLASS="verbatim">$ cat single.json 
 [1234,"abcde",{"start_date":{"year":1970,"month":1,"day":1}, 
 "end_date":{"year":1980,"month":1,"day":1}}]
@@ -164,7 +165,8 @@ per line, can also be pretty-printed with <TT>ydump</TT>. Input:</P><PRE CLASS="
   }
 ]
 [ 1, "a", {} ]
-</PRE><P>From an OCaml program, pretty-printing can be done with <TT>Yojson.Safe.prettify</TT>
+</PRE><P>From an OCaml program, pretty-printing can be done with
+<TT>Yojson.Safe.prettify</TT> 
 which has the following signature:</P><PRE>
 <FONT COLOR="#007F00">val</FONT> prettify : string -&gt; string
 </PRE><P>We wrote a tiny program that simply calls the <TT>prettify</TT> function on 
@@ -184,7 +186,8 @@ $ ./prettify
     "end_date": { "year": 1980, "month": 1, "day": 1 }
   }
 ]
-</PRE><!--TOC section Inspecting biniou data-->
+</PRE><P>Source code for this section:
+<A HREF="https://github.com/MyLifeLabs/atdgen-tutorial/tree/master/pretty-json"><TT>https://github.com/MyLifeLabs/atdgen-tutorial/tree/master/pretty-json</TT></A></P><!--TOC section Inspecting biniou data-->
 <H2 CLASS="section"><!--SEC ANCHOR --><A NAME="htoc5">5</A>  Inspecting biniou data</H2><!--SEC END --><P>Biniou is a binary format that can be displayed as text using a generic
 command called <TT>bdump</TT>. The only practical difficulty is to recover
 the original field names and variant names which are stored as 31-bit hashes.
@@ -282,7 +285,8 @@ The following now works:</P><PRE CLASS="verbatim">$ bdump tree.dat
        (&lt;"Node": (&lt;"Empty"&gt;, 3, &lt;"Empty"&gt;)&gt;,
         4,
         &lt;"Node": (&lt;"Empty"&gt;, 5, &lt;"Empty"&gt;)&gt;)&gt;)&gt;
-</PRE><!--TOC section Optional fields and default values-->
+</PRE><P>Source code for this section:
+<A HREF="https://github.com/MyLifeLabs/atdgen-tutorial/tree/master/inspect-biniou"><TT>https://github.com/MyLifeLabs/atdgen-tutorial/tree/master/inspect-biniou</TT></A></P><!--TOC section Optional fields and default values-->
 <H2 CLASS="section"><!--SEC ANCHOR --><A NAME="htoc6">6</A>  Optional fields and default values</H2><!--SEC END --><P>Although OCaml records do not support optional fields, both the JSON
 and biniou formats make it possible to omit certain fields on a
 per-record basis.</P><P>For example the JSON record <TT>{ "x": 0, "y": 0 }</TT> can be more
@@ -537,7 +541,8 @@ INVALID:
     "end_date": { "year": 1900, "month": 0, "day": 0 }
   }
 ]
-</PRE><!--TOC section Modularity: referring to type definitions from another ATD file-->
+</PRE><P>Source code for this section:
+<A HREF="https://github.com/MyLifeLabs/atdgen-tutorial/tree/master/validate"><TT>https://github.com/MyLifeLabs/atdgen-tutorial/tree/master/validate</TT></A></P><!--TOC section Modularity: referring to type definitions from another ATD file-->
 <H2 CLASS="section"><!--SEC ANCHOR --><A NAME="htoc15">9</A>  Modularity: referring to type definitions from another ATD file</H2><!--SEC END --><P>It is possible to define types that depend on types
 defined in other <TT>.atd</TT> files.
 The example below is self-explanatory.</P><P><TT>part1.atd</TT>:</P><PRE>
@@ -571,7 +576,8 @@ The example below is self-explanatory.</P><P><TT>part1.atd</TT>:</P><PRE>
   <FONT COLOR="#0033CC">Ag_util</FONT>.<FONT COLOR="#0033CC">Json</FONT>.to_channel <FONT COLOR="#0033CC">Part3_j</FONT>.write_t3 stdout v;
   print_newline ()
 </PRE><P>Output:</P><PRE CLASS="verbatim">{"name":"foo","data":[{"x":1,"y":2},{"x":3,"y":4}]}
-</PRE><!--TOC section Integration with ocamldoc-->
+</PRE><P>Source code for this section:
+<A HREF="https://github.com/MyLifeLabs/atdgen-tutorial/tree/master/modularity"><TT>https://github.com/MyLifeLabs/atdgen-tutorial/tree/master/modularity</TT></A></P><!--TOC section Integration with ocamldoc-->
 <H2 CLASS="section"><!--SEC ANCHOR --><A NAME="htoc16">10</A>  Integration with ocamldoc</H2><!--SEC END --><P>Ocamldoc is a tool that comes with the core OCaml distribution.
 It uses comments within <TT>(**</TT> and <TT>*)</TT> to produce hyperlinked documentation
 (HTML) of module signatures.</P><P>Atdgen can produce <TT>.mli</TT> files with comments in the syntax supported by 
