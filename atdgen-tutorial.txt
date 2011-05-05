@@ -31,6 +31,13 @@ Contents
    - 8  Data validation 
    - 9  Modularity: referring to type definitions from another ATD file 
    - 10  Integration with ocamldoc 
+   - 11  Integration with build systems 
+     
+        
+         - 11.0.1  OMake 
+         - 11.0.2  GNU Make 
+     
+  
    
   
 
@@ -819,10 +826,52 @@ comments:
 >>
   
   The only two forms of markup supported by <doc text="..."> are {{ ...
-}} for inline code and {{{ ... }}} for a block of preformatted code.  
+}} for inline code and {{{ ... }}} for a block of preformatted code.
+  
+
+11  Integration with build systems
+*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=
+
+  
+  
+
+11.0.1  OMake
+-------------
+  
+  We provide an atdgen plugin (3) for OMake (4). It allows to simplify
+the compilation rules to a minimum.
+  The plugin consists of a self-documented file to copy into a project's
+root. The following is a sample OMakefile for a project using JSON and
+five source files (foo.atd, foo.ml, bar.atd, bar.ml and main.ml):
+<<include Atdgen
+    # requires file Atdgen.om
+  
+  OCAMLFILES = foo_t foo_j foo bar_t bar_j bar main
+    # correspond to the OCaml modules we want to build
+  
+  Atdgen(foo bar, -j-std)
+  OCamlProgram(foobar, $(OCAMLFILES))
+  
+  .DEFAULT: foobar.opt
+  
+  .PHONY: clean
+  clean:
+    rm -f *.cm[ioxa] *.cmx[as] *.[oa] *.opt *.run *~
+    rm -f $(ATDGEN_OUTFILES)
+>>
+  
+  Running omake builds the native code executable foobar.opt.
+  omake clean removes all the products of compilation including the .mli
+and .ml produced by atdgen.
+  
+
+11.0.2  GNU Make
+----------------
+  
+  (coming soon)  
 -----------------------------------------------------------------------
   
-   This document was translated from LaTeX by HeVeA (3).
+   This document was translated from LaTeX by HeVeA (5).
 -----------------------------------
   
   
@@ -830,4 +879,8 @@ comments:
  
  (2) http://martin.jambon.free.fr/biniou-format.txt
  
- (3) http://hevea.inria.fr/index.html
+ (3) https://github.com/MyLifeLabs/atdgen-omake
+ 
+ (4) http://omake.metaprl.org
+ 
+ (5) http://hevea.inria.fr/index.html

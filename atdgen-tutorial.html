@@ -79,6 +79,13 @@ TD P{margin:0px;}
 </LI><LI CLASS="li-toc"><A HREF="#htoc14">8  Data validation</A>
 </LI><LI CLASS="li-toc"><A HREF="#htoc15">9  Modularity: referring to type definitions from another ATD file</A>
 </LI><LI CLASS="li-toc"><A HREF="#htoc16">10  Integration with ocamldoc</A>
+</LI><LI CLASS="li-toc"><A HREF="#htoc17">11  Integration with build systems</A>
+<UL CLASS="toc">
+<UL CLASS="toc"><LI CLASS="li-toc">
+<A HREF="#htoc18">11.0.1  OMake</A>
+</LI><LI CLASS="li-toc"><A HREF="#htoc19">11.0.2  GNU Make</A>
+</LI></UL>
+</UL>
 </LI></UL><!--TOC section What is atdgen?-->
 <H2 CLASS="section"><!--SEC ANCHOR --><A NAME="htoc1">1</A>  What is atdgen?</H2><!--SEC END --><P>Atdgen is a tool that derives OCaml boilerplate code from type definitions.
 Currently it provides support for:</P><UL CLASS="itemize"><LI CLASS="li-itemize">
@@ -603,7 +610,34 @@ element they describe. The contents of the text field must be UTF8-encoded.</P><
   z: float <FONT COLOR="#990000">(** Optional depth, its default value is [0.0]. *)</FONT>
 }
 </PRE><P>The only two forms of markup supported by <TT>&lt;doc text="..."&gt;</TT> are <TT>{{</TT> ... <TT>}}</TT>
-for inline code and <TT>{{{</TT> ... <TT>}}}</TT> for a block of preformatted code.
+for inline code and <TT>{{{</TT> ... <TT>}}}</TT> for a block of preformatted code.</P><!--TOC section Integration with build systems-->
+<H2 CLASS="section"><!--SEC ANCHOR --><A NAME="htoc17">11</A>  Integration with build systems</H2><!--SEC END --><!--TOC subsubsection OMake-->
+<H4 CLASS="subsubsection"><!--SEC ANCHOR --><A NAME="htoc18">11.0.1</A>  OMake</H4><!--SEC END --><P>We provide an
+<A HREF="https://github.com/MyLifeLabs/atdgen-omake">atdgen
+plugin</A> for <A HREF="http://omake.metaprl.org">OMake</A>.
+It allows to simplify the compilation rules to a minimum.</P><P>The plugin consists of a self-documented file to copy into a project&#X2019;s
+root. The following is a sample <TT>OMakefile</TT> for a project using JSON and
+five source files (<TT>foo.atd</TT>, <TT>foo.ml</TT>,
+<TT>bar.atd</TT>, <TT>bar.ml</TT> and <TT>main.ml</TT>):</P><PRE CLASS="verbatim">include Atdgen
+  # requires file Atdgen.om
+
+OCAMLFILES = foo_t foo_j foo bar_t bar_j bar main
+  # correspond to the OCaml modules we want to build
+
+Atdgen(foo bar, -j-std)
+OCamlProgram(foobar, $(OCAMLFILES))
+
+.DEFAULT: foobar.opt
+
+.PHONY: clean
+clean:
+  rm -f *.cm[ioxa] *.cmx[as] *.[oa] *.opt *.run *~
+  rm -f $(ATDGEN_OUTFILES)
+</PRE><P>Running <TT>omake</TT> builds the native code executable
+<TT>foobar.opt</TT>.</P><P><TT>omake clean</TT> removes all the products
+of compilation including the <TT>.mli</TT> and <TT>.ml</TT> produced
+by <TT>atdgen</TT>.</P><!--TOC subsubsection GNU Make-->
+<H4 CLASS="subsubsection"><!--SEC ANCHOR --><A NAME="htoc19">11.0.2</A>  GNU Make</H4><!--SEC END --><P>(coming soon)
 
 </P><!--CUT END -->
 <!--HTMLFOOT-->
