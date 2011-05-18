@@ -62,28 +62,29 @@ TD P{margin:0px;}
 </TABLE><!--TOC section Contents-->
 <H2 CLASS="section"><!--SEC ANCHOR -->Contents</H2><!--SEC END --><UL CLASS="toc"><LI CLASS="li-toc">
 <A HREF="#htoc1">1  What is atdgen?</A>
-</LI><LI CLASS="li-toc"><A HREF="#htoc2">2  Prerequisites</A>
-</LI><LI CLASS="li-toc"><A HREF="#htoc3">3  Getting started</A>
-</LI><LI CLASS="li-toc"><A HREF="#htoc4">4  Inspecting and pretty-printing JSON</A>
-</LI><LI CLASS="li-toc"><A HREF="#htoc5">5  Inspecting biniou data</A>
-</LI><LI CLASS="li-toc"><A HREF="#htoc6">6  Optional fields and default values</A>
-</LI><LI CLASS="li-toc"><A HREF="#htoc7">7  Smooth protocol upgrades</A>
+</LI><LI CLASS="li-toc"><A HREF="#htoc2">2  What are the advantages of atdgen?</A>
+</LI><LI CLASS="li-toc"><A HREF="#htoc3">3  Prerequisites</A>
+</LI><LI CLASS="li-toc"><A HREF="#htoc4">4  Getting started</A>
+</LI><LI CLASS="li-toc"><A HREF="#htoc5">5  Inspecting and pretty-printing JSON</A>
+</LI><LI CLASS="li-toc"><A HREF="#htoc6">6  Inspecting biniou data</A>
+</LI><LI CLASS="li-toc"><A HREF="#htoc7">7  Optional fields and default values</A>
+</LI><LI CLASS="li-toc"><A HREF="#htoc8">8  Smooth protocol upgrades</A>
 <UL CLASS="toc"><LI CLASS="li-toc">
-<A HREF="#htoc8">7.1  Adding or removing an optional record field</A>
-</LI><LI CLASS="li-toc"><A HREF="#htoc9">7.2  Adding a required record field</A>
-</LI><LI CLASS="li-toc"><A HREF="#htoc10">7.3  Removing a required record field</A>
-</LI><LI CLASS="li-toc"><A HREF="#htoc11">7.4  Adding a variant case</A>
-</LI><LI CLASS="li-toc"><A HREF="#htoc12">7.5  Removing a variant case</A>
-</LI><LI CLASS="li-toc"><A HREF="#htoc13">7.6  Avoiding future problems</A>
+<A HREF="#htoc9">8.1  Adding or removing an optional record field</A>
+</LI><LI CLASS="li-toc"><A HREF="#htoc10">8.2  Adding a required record field</A>
+</LI><LI CLASS="li-toc"><A HREF="#htoc11">8.3  Removing a required record field</A>
+</LI><LI CLASS="li-toc"><A HREF="#htoc12">8.4  Adding a variant case</A>
+</LI><LI CLASS="li-toc"><A HREF="#htoc13">8.5  Removing a variant case</A>
+</LI><LI CLASS="li-toc"><A HREF="#htoc14">8.6  Avoiding future problems</A>
 </LI></UL>
-</LI><LI CLASS="li-toc"><A HREF="#htoc14">8  Data validation</A>
-</LI><LI CLASS="li-toc"><A HREF="#htoc15">9  Modularity: referring to type definitions from another ATD file</A>
-</LI><LI CLASS="li-toc"><A HREF="#htoc16">10  Integration with ocamldoc</A>
-</LI><LI CLASS="li-toc"><A HREF="#htoc17">11  Integration with build systems</A>
+</LI><LI CLASS="li-toc"><A HREF="#htoc15">9  Data validation</A>
+</LI><LI CLASS="li-toc"><A HREF="#htoc16">10  Modularity: referring to type definitions from another ATD file</A>
+</LI><LI CLASS="li-toc"><A HREF="#htoc17">11  Integration with ocamldoc</A>
+</LI><LI CLASS="li-toc"><A HREF="#htoc18">12  Integration with build systems</A>
 <UL CLASS="toc">
 <UL CLASS="toc"><LI CLASS="li-toc">
-<A HREF="#htoc18">11.0.1  OMake</A>
-</LI><LI CLASS="li-toc"><A HREF="#htoc19">11.0.2  GNU Make</A>
+<A HREF="#htoc19">12.0.1  OMake</A>
+</LI><LI CLASS="li-toc"><A HREF="#htoc20">12.0.2  GNU Make</A>
 </LI></UL>
 </UL>
 </LI></UL><!--TOC section What is atdgen?-->
@@ -95,8 +96,26 @@ serialization and deserialization.
 Biniou is a binary format extensible like JSON but more compact
 and faster to process.
 </LI><LI CLASS="li-itemize">Convenience functions for creating and validating OCaml data.
+</LI></UL><!--TOC section What are the advantages of atdgen?-->
+<H2 CLASS="section"><!--SEC ANCHOR --><A NAME="htoc2">2</A>  What are the advantages of atdgen?</H2><!--SEC END --><P>Atdgen has a number of advantages over its predecessor json-static
+which was based on Camlp4:
+</P><UL CLASS="itemize"><LI CLASS="li-itemize">
+produces explicit interfaces which describe what is available to
+the user (<TT>.mli</TT> files).
+</LI><LI CLASS="li-itemize">produces readable OCaml code that can be easily reviewed
+(<TT>.ml</TT> files). 
+</LI><LI CLASS="li-itemize">produces fast code, 3x faster than json-static.
+</LI><LI CLASS="li-itemize">runs fast, keeping build times low.
+</LI><LI CLASS="li-itemize">same ATD definitions can be used to generate code other than
+OCaml. See for instance
+<A HREF="https://github.com/MyLifeLabs/atdj">Atdj</A> 
+which generates Java classes for JSON IO.
+Auto-generating GUI widgets from type definitions is another
+popular use of annotated type definitions. The implementation of
+such code generators is facilitated by the
+<A HREF="http://oss.wink.com/atd/"><TT>atd</TT></A> library.
 </LI></UL><!--TOC section Prerequisites-->
-<H2 CLASS="section"><!--SEC ANCHOR --><A NAME="htoc2">2</A>  Prerequisites</H2><!--SEC END --><P>This tutorial assumes that you are using atdgen version 1.2.0 or above.
+<H2 CLASS="section"><!--SEC ANCHOR --><A NAME="htoc3">3</A>  Prerequisites</H2><!--SEC END --><P>This tutorial assumes that you are using atdgen version 1.2.0 or above.
 The following command tells you which version you are using:</P><PRE CLASS="verbatim">$ atdgen -version
 1.2.0+dev
 </PRE><P>At the time of writing, atdgen 1.2.0 has not
@@ -108,7 +127,7 @@ but leave all its dependencies installed.</P><P>Now read the instructions in <TT
 $ make
 $ make install
 </PRE><!--TOC section Getting started-->
-<H2 CLASS="section"><!--SEC ANCHOR --><A NAME="htoc3">3</A>  Getting started</H2><!--SEC END --><P>From now on we assume that atdgen 1.2.0 or above is installed properly.
+<H2 CLASS="section"><!--SEC ANCHOR --><A NAME="htoc4">4</A>  Getting started</H2><!--SEC END --><P>From now on we assume that atdgen 1.2.0 or above is installed properly.
 1.2.0+dev is fine.</P><PRE CLASS="verbatim">$ atdgen -version
 1.2.0+dev
 </PRE><P>Type definitions are placed in a <TT>.atd</TT> file (<TT>hello.atd</TT>):</P><PRE>
@@ -138,7 +157,7 @@ $ ocamlfind ocamlopt -o hello hello_t.cmx hello_j.cmx hello.cmx \
 {"year":1970,"month":1,"day":1}
 </PRE><P>Source code for this section:
 <A HREF="https://github.com/MyLifeLabs/atdgen-tutorial/tree/master/hello"><TT>https://github.com/MyLifeLabs/atdgen-tutorial/tree/master/hello</TT></A></P><!--TOC section Inspecting and pretty-printing JSON-->
-<H2 CLASS="section"><!--SEC ANCHOR --><A NAME="htoc4">4</A>  Inspecting and pretty-printing JSON</H2><!--SEC END --><P>Input JSON data:</P><PRE CLASS="verbatim">$ cat single.json 
+<H2 CLASS="section"><!--SEC ANCHOR --><A NAME="htoc5">5</A>  Inspecting and pretty-printing JSON</H2><!--SEC END --><P>Input JSON data:</P><PRE CLASS="verbatim">$ cat single.json 
 [1234,"abcde",{"start_date":{"year":1970,"month":1,"day":1}, 
 "end_date":{"year":1980,"month":1,"day":1}}]
 </PRE><P>Pretty-printed JSON can be produced with the <TT>ydump</TT> command:</P><PRE CLASS="verbatim">$ ydump single.json 
@@ -188,7 +207,7 @@ $ ./prettify
 ]
 </PRE><P>Source code for this section:
 <A HREF="https://github.com/MyLifeLabs/atdgen-tutorial/tree/master/pretty-json"><TT>https://github.com/MyLifeLabs/atdgen-tutorial/tree/master/pretty-json</TT></A></P><!--TOC section Inspecting biniou data-->
-<H2 CLASS="section"><!--SEC ANCHOR --><A NAME="htoc5">5</A>  Inspecting biniou data</H2><!--SEC END --><P>Biniou is a binary format that can be displayed as text using a generic
+<H2 CLASS="section"><!--SEC ANCHOR --><A NAME="htoc6">6</A>  Inspecting biniou data</H2><!--SEC END --><P>Biniou is a binary format that can be displayed as text using a generic
 command called <TT>bdump</TT>. The only practical difficulty is to recover
 the original field names and variant names which are stored as 31-bit hashes.
 Unhashing them is done by consulting a dictionary (list of words)
@@ -287,7 +306,7 @@ The following now works:</P><PRE CLASS="verbatim">$ bdump tree.dat
         &lt;"Node": (&lt;"Empty"&gt;, 5, &lt;"Empty"&gt;)&gt;)&gt;)&gt;
 </PRE><P>Source code for this section:
 <A HREF="https://github.com/MyLifeLabs/atdgen-tutorial/tree/master/inspect-biniou"><TT>https://github.com/MyLifeLabs/atdgen-tutorial/tree/master/inspect-biniou</TT></A></P><!--TOC section Optional fields and default values-->
-<H2 CLASS="section"><!--SEC ANCHOR --><A NAME="htoc6">6</A>  Optional fields and default values</H2><!--SEC END --><P>Although OCaml records do not support optional fields, both the JSON
+<H2 CLASS="section"><!--SEC ANCHOR --><A NAME="htoc7">7</A>  Optional fields and default values</H2><!--SEC END --><P>Although OCaml records do not support optional fields, both the JSON
 and biniou formats make it possible to omit certain fields on a
 per-record basis.</P><P>For example the JSON record <TT>{ "x": 0, "y": 0 }</TT> can be more
 compactly written as <TT>{}</TT> if the reader knows the default values for
@@ -328,13 +347,13 @@ not what is intended:</P><PRE CLASS="verbatim">{ "x": 2, "y": 2, "z": [ "Some", 
 </PRE><PRE CLASS="verbatim">{ "x": 2, "y": 2, "z": "None" }
 </PRE><PRE CLASS="verbatim">{ "x": 2, "y": 2 }
 </PRE><!--TOC section Smooth protocol upgrades-->
-<H2 CLASS="section"><!--SEC ANCHOR --><A NAME="htoc7">7</A>  Smooth protocol upgrades</H2><!--SEC END --><P>Problem: you have a production system that uses a specific
+<H2 CLASS="section"><!--SEC ANCHOR --><A NAME="htoc8">8</A>  Smooth protocol upgrades</H2><!--SEC END --><P>Problem: you have a production system that uses a specific
 JSON or biniou format. It may be data files or a client-server
 pair. You now want to add a field to a record type or to add a case to
 a variant type.</P><P>Both JSON and biniou allow extra record fields. If the
 consumer does not know how to deal with the extra field, the default
 behavior is to happily ignore it.</P><!--TOC subsection Adding or removing an optional record field-->
-<H3 CLASS="subsection"><!--SEC ANCHOR --><A NAME="htoc8">7.1</A>  Adding or removing an optional record field</H3><!--SEC END --><PRE>
+<H3 CLASS="subsection"><!--SEC ANCHOR --><A NAME="htoc9">8.1</A>  Adding or removing an optional record field</H3><!--SEC END --><PRE>
 <FONT COLOR="#007F00">type</FONT> t = {
   x: int;
   y: int;
@@ -349,7 +368,7 @@ behavior is to happily ignore it.</P><!--TOC subsection Adding or removing an op
 Upgrade producers and consumers in any order
 </LI><LI CLASS="li-itemize">Converting old data is not required nor useful
 </LI></UL><!--TOC subsection Adding a required record field-->
-<H3 CLASS="subsection"><!--SEC ANCHOR --><A NAME="htoc9">7.2</A>  Adding a required record field</H3><!--SEC END --><PRE>
+<H3 CLASS="subsection"><!--SEC ANCHOR --><A NAME="htoc10">8.2</A>  Adding a required record field</H3><!--SEC END --><PRE>
 <FONT COLOR="#007F00">type</FONT> t = {
   x: int;
   y: int;
@@ -364,12 +383,12 @@ Upgrade producers and consumers in any order
 Upgrade all producers before the consumers
 </LI><LI CLASS="li-itemize">Converting old data requires special-purpose hand-written code
 </LI></UL><!--TOC subsection Removing a required record field-->
-<H3 CLASS="subsection"><!--SEC ANCHOR --><A NAME="htoc10">7.3</A>  Removing a required record field</H3><!--SEC END --><UL CLASS="itemize"><LI CLASS="li-itemize">
+<H3 CLASS="subsection"><!--SEC ANCHOR --><A NAME="htoc11">8.3</A>  Removing a required record field</H3><!--SEC END --><UL CLASS="itemize"><LI CLASS="li-itemize">
 Upgrade all consumers before the producers
 </LI><LI CLASS="li-itemize">Converting old data is not required but may save some storage space
 (just read and re-write each record using the new type)
 </LI></UL><!--TOC subsection Adding a variant case-->
-<H3 CLASS="subsection"><!--SEC ANCHOR --><A NAME="htoc11">7.4</A>  Adding a variant case</H3><!--SEC END --><PRE>
+<H3 CLASS="subsection"><!--SEC ANCHOR --><A NAME="htoc12">8.4</A>  Adding a variant case</H3><!--SEC END --><PRE>
 <FONT COLOR="#007F00">type</FONT> t = [ <FONT COLOR="#0033CC">A</FONT> <FONT COLOR="#77AAAA">|</FONT> <FONT COLOR="#0033CC">B</FONT> ]
 </PRE><P>Same <TT>.atd</TT> source file, edited:</P><PRE>
 <FONT COLOR="#007F00">type</FONT> t = [ <FONT COLOR="#0033CC">A</FONT> <FONT COLOR="#77AAAA">|</FONT> <FONT COLOR="#0033CC">B</FONT> <FONT COLOR="#77AAAA">|</FONT> <FONT COLOR="#0033CC">C</FONT> ]
@@ -377,18 +396,18 @@ Upgrade all consumers before the producers
 Upgrade all consumers before the producers
 </LI><LI CLASS="li-itemize">Converting old data is not required and would have no effect
 </LI></UL><!--TOC subsection Removing a variant case-->
-<H3 CLASS="subsection"><!--SEC ANCHOR --><A NAME="htoc12">7.5</A>  Removing a variant case</H3><!--SEC END --><UL CLASS="itemize"><LI CLASS="li-itemize">
+<H3 CLASS="subsection"><!--SEC ANCHOR --><A NAME="htoc13">8.5</A>  Removing a variant case</H3><!--SEC END --><UL CLASS="itemize"><LI CLASS="li-itemize">
 Upgrade all producers before the consumers
 </LI><LI CLASS="li-itemize">Converting old data requires special-purpose hand-written code
 </LI></UL><!--TOC subsection Avoiding future problems-->
-<H3 CLASS="subsection"><!--SEC ANCHOR --><A NAME="htoc13">7.6</A>  Avoiding future problems</H3><!--SEC END --><UL CLASS="itemize"><LI CLASS="li-itemize">
+<H3 CLASS="subsection"><!--SEC ANCHOR --><A NAME="htoc14">8.6</A>  Avoiding future problems</H3><!--SEC END --><UL CLASS="itemize"><LI CLASS="li-itemize">
 In doubt, use records rather than tuples because it makes it
 possible to add or remove any field or to reorder them.
 </LI><LI CLASS="li-itemize">Do not hesitate to create variant types with only one case or
 records with only one field if you think they might be extended
 later.
 </LI></UL><!--TOC section Data validation-->
-<H2 CLASS="section"><!--SEC ANCHOR --><A NAME="htoc14">8</A>  Data validation</H2><!--SEC END --><P>Atdgen can be used to produce data validators for all types defined 
+<H2 CLASS="section"><!--SEC ANCHOR --><A NAME="htoc15">9</A>  Data validation</H2><!--SEC END --><P>Atdgen can be used to produce data validators for all types defined 
 in an ATD file,
 based on user-given validators specified only for certain types.
 A simple example is:</P><PRE>
@@ -543,7 +562,7 @@ INVALID:
 ]
 </PRE><P>Source code for this section:
 <A HREF="https://github.com/MyLifeLabs/atdgen-tutorial/tree/master/validate"><TT>https://github.com/MyLifeLabs/atdgen-tutorial/tree/master/validate</TT></A></P><!--TOC section Modularity: referring to type definitions from another ATD file-->
-<H2 CLASS="section"><!--SEC ANCHOR --><A NAME="htoc15">9</A>  Modularity: referring to type definitions from another ATD file</H2><!--SEC END --><P>It is possible to define types that depend on types
+<H2 CLASS="section"><!--SEC ANCHOR --><A NAME="htoc16">10</A>  Modularity: referring to type definitions from another ATD file</H2><!--SEC END --><P>It is possible to define types that depend on types
 defined in other <TT>.atd</TT> files.
 The example below is self-explanatory.</P><P><TT>part1.atd</TT>:</P><PRE>
 <FONT COLOR="#007F00">type</FONT> t = { x : int; y : int }
@@ -578,7 +597,7 @@ The example below is self-explanatory.</P><P><TT>part1.atd</TT>:</P><PRE>
 </PRE><P>Output:</P><PRE CLASS="verbatim">{"name":"foo","data":[{"x":1,"y":2},{"x":3,"y":4}]}
 </PRE><P>Source code for this section:
 <A HREF="https://github.com/MyLifeLabs/atdgen-tutorial/tree/master/modularity"><TT>https://github.com/MyLifeLabs/atdgen-tutorial/tree/master/modularity</TT></A></P><!--TOC section Integration with ocamldoc-->
-<H2 CLASS="section"><!--SEC ANCHOR --><A NAME="htoc16">10</A>  Integration with ocamldoc</H2><!--SEC END --><P>Ocamldoc is a tool that comes with the core OCaml distribution.
+<H2 CLASS="section"><!--SEC ANCHOR --><A NAME="htoc17">11</A>  Integration with ocamldoc</H2><!--SEC END --><P>Ocamldoc is a tool that comes with the core OCaml distribution.
 It uses comments within <TT>(**</TT> and <TT>*)</TT> to produce hyperlinked documentation
 (HTML) of module signatures.</P><P>Atdgen can produce <TT>.mli</TT> files with comments in the syntax supported by 
 ocamldoc but regular ATD comments within <TT>(*</TT> and <TT>*)</TT> are always discarded
@@ -617,8 +636,8 @@ element they describe. The contents of the text field must be UTF8-encoded.</P><
 }
 </PRE><P>The only two forms of markup supported by <TT>&lt;doc text="..."&gt;</TT> are <TT>{{</TT> ... <TT>}}</TT>
 for inline code and <TT>{{{</TT> ... <TT>}}}</TT> for a block of preformatted code.</P><!--TOC section Integration with build systems-->
-<H2 CLASS="section"><!--SEC ANCHOR --><A NAME="htoc17">11</A>  Integration with build systems</H2><!--SEC END --><!--TOC subsubsection OMake-->
-<H4 CLASS="subsubsection"><!--SEC ANCHOR --><A NAME="htoc18">11.0.1</A>  OMake</H4><!--SEC END --><P>We provide an
+<H2 CLASS="section"><!--SEC ANCHOR --><A NAME="htoc18">12</A>  Integration with build systems</H2><!--SEC END --><!--TOC subsubsection OMake-->
+<H4 CLASS="subsubsection"><!--SEC ANCHOR --><A NAME="htoc19">12.0.1</A>  OMake</H4><!--SEC END --><P>We provide an
 <A HREF="https://github.com/MyLifeLabs/atdgen-omake">atdgen
 plugin</A> for <A HREF="http://omake.metaprl.org">OMake</A>.
 It allows to simplify the compilation rules to a minimum.</P><P>The plugin consists of a self-documented file to copy into a project&#X2019;s
@@ -643,7 +662,42 @@ clean:
 <TT>foobar.opt</TT>.</P><P><TT>omake clean</TT> removes all the products
 of compilation including the <TT>.mli</TT> and <TT>.ml</TT> produced
 by <TT>atdgen</TT>.</P><!--TOC subsubsection GNU Make-->
-<H4 CLASS="subsubsection"><!--SEC ANCHOR --><A NAME="htoc19">11.0.2</A>  GNU Make</H4><!--SEC END --><P>(coming soon)
+<H4 CLASS="subsubsection"><!--SEC ANCHOR --><A NAME="htoc20">12.0.2</A>  GNU Make</H4><!--SEC END --><P>We provide 
+<A HREF="https://github.com/MyLifeLabs/atdgen-omake"><TT>Atdgen.mk</TT></A>,
+a generic makefile that defines the 
+dependencies and rules for generating OCaml <TT>.mli</TT> and
+<TT>.ml</TT> files from <TT>.atd</TT> files containing type
+definitions. The <TT>Atdgen.mk</TT> file contains its own documentation.</P><P>Here is a sample <TT>Makefile</TT> that takes advantage of
+<A HREF="http://www.ocaml.info/home/ocaml_sources.html#ocaml-make"><TT>OCamlMakefile</TT></A>:
+</P><PRE CLASS="verbatim">.PHONY: default
+default: opt
+
+ATDGEN_SOURCES = foo.atd bar.atd
+ATDGEN_FLAGS = -j-std
+include Atdgen.mk
+
+SOURCES = \
+  foo_t.mli foo_t.ml foo_j.mli foo_j.ml \
+  bar_t.mli bar_t.ml bar_j.mli bar_j.ml \
+  hello.ml
+RESULT = hello
+PACKS = atdgen
+# "include OCamlMakefile" must come after defs for SOURCES, RESULT, PACKS, etc.
+include OCamlMakefile
+
+.PHONY: sources opt all
+sources: $(SOURCES)
+opt: sources
+        $(MAKE) native-code
+all: sources
+        $(MAKE) byte-code
+</PRE><P><TT>make</TT> alone builds a native code executable from source files
+<TT>foo.atd</TT>, <TT>bar.atd</TT> and <TT>hello.ml</TT>.
+<TT>make clean</TT> removes generated files. <TT>make all</TT> builds
+a bytecode executable.
+In addition to <TT>native-code</TT>, <TT>byte-code</TT> and
+<TT>clean</TT>, <TT>OCamlMakefile</TT> provides a number of other targets
+and options which are documented in <TT>OCamlMakefile</TT>&#X2019;s README.
 
 </P><!--CUT END -->
 <!--HTMLFOOT-->

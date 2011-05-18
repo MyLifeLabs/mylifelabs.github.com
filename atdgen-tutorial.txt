@@ -14,28 +14,30 @@ Contents
    
   
    - 1  What is atdgen? 
-   - 2  Prerequisites 
-   - 3  Getting started 
-   - 4  Inspecting and pretty-printing JSON 
-   - 5  Inspecting biniou data 
-   - 6  Optional fields and default values 
-   - 7  Smooth protocol upgrades 
+   - 2  What are the advantages of atdgen? 
+   - 3  Prerequisites 
+   - 4  Getting started 
+   - 5  Inspecting and pretty-printing JSON 
+   - 6  Inspecting biniou data 
+   - 7  Optional fields and default values 
+   - 8  Smooth protocol upgrades 
      
-      - 7.1  Adding or removing an optional record field 
-      - 7.2  Adding a required record field 
-      - 7.3  Removing a required record field 
-      - 7.4  Adding a variant case 
-      - 7.5  Removing a variant case 
-      - 7.6  Avoiding future problems 
+      - 8.1  Adding or removing an optional record field 
+      - 8.2  Adding a required record field 
+      - 8.3  Removing a required record field 
+      - 8.4  Adding a variant case 
+      - 8.5  Removing a variant case 
+      - 8.6  Avoiding future problems 
   
-   - 8  Data validation 
-   - 9  Modularity: referring to type definitions from another ATD file 
-   - 10  Integration with ocamldoc 
-   - 11  Integration with build systems 
+   - 9  Data validation 
+   - 10  Modularity: referring to type definitions from another ATD file
+   
+   - 11  Integration with ocamldoc 
+   - 12  Integration with build systems 
      
         
-         - 11.0.1  OMake 
-         - 11.0.2  GNU Make 
+         - 12.0.1  OMake 
+         - 12.0.2  GNU Make 
      
   
    
@@ -56,7 +58,28 @@ definitions. Currently it provides support for:
   
   
 
-2  Prerequisites
+2  What are the advantages of atdgen?
+*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*
+
+  
+  Atdgen has a number of advantages over its predecessor json-static
+which was based on Camlp4: 
+  
+   - produces explicit interfaces which describe what is available to
+   the user (.mli files). 
+   - produces readable OCaml code that can be easily reviewed (.ml
+   files).  
+   - produces fast code, 3x faster than json-static. 
+   - runs fast, keeping build times low. 
+   - same ATD definitions can be used to generate code other than OCaml.
+   See for instance Atdj (3)  which generates Java classes for JSON IO.
+   Auto-generating GUI widgets from type definitions is another popular
+   use of annotated type definitions. The implementation of such code
+   generators is facilitated by the atd (4) library. 
+  
+  
+
+3  Prerequisites
 *=*=*=*=*=*=*=*=
 
   
@@ -83,7 +106,7 @@ leave all its dependencies installed.
   
   
 
-3  Getting started
+4  Getting started
 *=*=*=*=*=*=*=*=*=
 
   
@@ -140,7 +163,7 @@ respectively:
 https://github.com/MyLifeLabs/atdgen-tutorial/tree/master/hello
   
 
-4  Inspecting and pretty-printing JSON
+5  Inspecting and pretty-printing JSON
 *=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=
 
   
@@ -217,7 +240,7 @@ some predefined JSON data (file prettify.ml):
 https://github.com/MyLifeLabs/atdgen-tutorial/tree/master/pretty-json
   
 
-5  Inspecting biniou data
+6  Inspecting biniou data
 *=*=*=*=*=*=*=*=*=*=*=*=*
 
   
@@ -349,7 +372,7 @@ anymore (for this user on this machine). The following now works:
 https://github.com/MyLifeLabs/atdgen-tutorial/tree/master/inspect-biniou
   
 
-6  Optional fields and default values
+7  Optional fields and default values
 *=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*
 
   
@@ -421,7 +444,7 @@ not what is intended:
   
   
 
-7  Smooth protocol upgrades
+8  Smooth protocol upgrades
 *=*=*=*=*=*=*=*=*=*=*=*=*=*
 
   
@@ -433,7 +456,7 @@ not know how to deal with the extra field, the default behavior is to
 happily ignore it.
   
 
-7.1  Adding or removing an optional record field
+8.1  Adding or removing an optional record field
 ================================================
   
 <<
@@ -459,7 +482,7 @@ happily ignore it.
   
   
 
-7.2  Adding a required record field
+8.2  Adding a required record field
 ===================================
   
 <<
@@ -485,7 +508,7 @@ happily ignore it.
   
   
 
-7.3  Removing a required record field
+8.3  Removing a required record field
 =====================================
   
   
@@ -496,7 +519,7 @@ happily ignore it.
   
   
 
-7.4  Adding a variant case
+8.4  Adding a variant case
 ==========================
   
 <<
@@ -515,7 +538,7 @@ happily ignore it.
   
   
 
-7.5  Removing a variant case
+8.5  Removing a variant case
 ============================
   
   
@@ -525,7 +548,7 @@ happily ignore it.
   
   
 
-7.6  Avoiding future problems
+8.6  Avoiding future problems
 =============================
   
   
@@ -538,7 +561,7 @@ happily ignore it.
   
   
 
-8  Data validation
+9  Data validation
 *=*=*=*=*=*=*=*=*=
 
   
@@ -728,8 +751,8 @@ Resume_v module:
 https://github.com/MyLifeLabs/atdgen-tutorial/tree/master/validate
   
 
-9  Modularity: referring to type definitions from another ATD file
-*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=
+10  Modularity: referring to type definitions from another ATD file
+*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*
 
   
   It is possible to define types that depend on types defined in other
@@ -785,7 +808,7 @@ from the
 https://github.com/MyLifeLabs/atdgen-tutorial/tree/master/modularity
   
 
-10  Integration with ocamldoc
+11  Integration with ocamldoc
 *=*=*=*=*=*=*=*=*=*=*=*=*=*=*
 
   
@@ -839,16 +862,16 @@ comments:
 }} for inline code and {{{ ... }}} for a block of preformatted code.
   
 
-11  Integration with build systems
+12  Integration with build systems
 *=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=
 
   
   
 
-11.0.1  OMake
+12.0.1  OMake
 -------------
   
-  We provide an atdgen plugin (3) for OMake (4). It allows to simplify
+  We provide an atdgen plugin (5) for OMake (6). It allows to simplify
 the compilation rules to a minimum.
   The plugin consists of a self-documented file to copy into a project's
 root. The following is a sample OMakefile for a project using JSON and
@@ -875,13 +898,47 @@ five source files (foo.atd, foo.ml, bar.atd, bar.ml and main.ml):
 and .ml produced by atdgen.
   
 
-11.0.2  GNU Make
+12.0.2  GNU Make
 ----------------
   
-  (coming soon)  
+  We provide  Atdgen.mk (7), a generic makefile that defines the 
+dependencies and rules for generating OCaml .mli and .ml files from .atd
+files containing type definitions. The Atdgen.mk file contains its own
+documentation.
+  Here is a sample Makefile that takes advantage of OCamlMakefile (8): 
+<<.PHONY: default
+  default: opt
+  
+  ATDGEN_SOURCES = foo.atd bar.atd
+  ATDGEN_FLAGS = -j-std
+  include Atdgen.mk
+  
+  SOURCES = \
+    foo_t.mli foo_t.ml foo_j.mli foo_j.ml \
+    bar_t.mli bar_t.ml bar_j.mli bar_j.ml \
+    hello.ml
+  RESULT = hello
+  PACKS = atdgen
+  # "include OCamlMakefile" must come after defs for SOURCES, RESULT,
+PACKS, etc.
+  include OCamlMakefile
+  
+  .PHONY: sources opt all
+  sources: $(SOURCES)
+  opt: sources
+          $(MAKE) native-code
+  all: sources
+          $(MAKE) byte-code
+>>
+  
+  make alone builds a native code executable from source files foo.atd,
+bar.atd and hello.ml. make clean removes generated files. make all
+builds a bytecode executable. In addition to native-code, byte-code and
+clean, OCamlMakefile provides a number of other targets and options
+which are documented in OCamlMakefile's README.  
 -----------------------------------------------------------------------
   
-   This document was translated from LaTeX by HeVeA (5).
+   This document was translated from LaTeX by HeVeA (9).
 -----------------------------------
   
   
@@ -889,8 +946,16 @@ and .ml produced by atdgen.
  
  (2) http://martin.jambon.free.fr/biniou-format.txt
  
- (3) https://github.com/MyLifeLabs/atdgen-omake
+ (3) https://github.com/MyLifeLabs/atdj
  
- (4) http://omake.metaprl.org
+ (4) http://oss.wink.com/atd/
  
- (5) http://hevea.inria.fr/index.html
+ (5) https://github.com/MyLifeLabs/atdgen-omake
+ 
+ (6) http://omake.metaprl.org
+ 
+ (7) https://github.com/MyLifeLabs/atdgen-omake
+ 
+ (8) http://www.ocaml.info/home/ocaml_sources.html#ocaml-make
+ 
+ (9) http://hevea.inria.fr/index.html
