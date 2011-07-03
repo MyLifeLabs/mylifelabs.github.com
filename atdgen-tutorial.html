@@ -61,8 +61,8 @@ TD P{margin:0px;}
 © 2011 MyLife</H3></TD></TR>
 </TABLE><!--TOC section Contents-->
 <H2 CLASS="section"><!--SEC ANCHOR -->Contents</H2><!--SEC END --><UL CLASS="toc"><LI CLASS="li-toc">
-<A HREF="#htoc1">1  What is atdgen?</A>
-</LI><LI CLASS="li-toc"><A HREF="#htoc2">2  What are the advantages of atdgen?</A>
+<A HREF="#htoc1">1  What is Atdgen?</A>
+</LI><LI CLASS="li-toc"><A HREF="#htoc2">2  What are the advantages of Atdgen?</A>
 </LI><LI CLASS="li-toc"><A HREF="#htoc3">3  Prerequisites</A>
 </LI><LI CLASS="li-toc"><A HREF="#htoc4">4  Getting started</A>
 </LI><LI CLASS="li-toc"><A HREF="#htoc5">5  Inspecting and pretty-printing JSON</A>
@@ -87,8 +87,8 @@ TD P{margin:0px;}
 </LI><LI CLASS="li-toc"><A HREF="#htoc20">12.0.2  GNU Make</A>
 </LI></UL>
 </UL>
-</LI></UL><!--TOC section What is atdgen?-->
-<H2 CLASS="section"><!--SEC ANCHOR --><A NAME="htoc1">1</A>  What is atdgen?</H2><!--SEC END --><P>Atdgen is a tool that derives OCaml boilerplate code from type definitions.
+</LI></UL><!--TOC section What is Atdgen?-->
+<H2 CLASS="section"><!--SEC ANCHOR --><A NAME="htoc1">1</A>  What is Atdgen?</H2><!--SEC END --><P>Atdgen is a tool that derives OCaml boilerplate code from type definitions.
 Currently it provides support for:</P><UL CLASS="itemize"><LI CLASS="li-itemize">
 <A HREF="http://json.org/">JSON</A> serialization and deserialization.
 </LI><LI CLASS="li-itemize"><A HREF="http://martin.jambon.free.fr/biniou-format.txt">Biniou</A>
@@ -96,8 +96,8 @@ serialization and deserialization.
 Biniou is a binary format extensible like JSON but more compact
 and faster to process.
 </LI><LI CLASS="li-itemize">Convenience functions for creating and validating OCaml data.
-</LI></UL><!--TOC section What are the advantages of atdgen?-->
-<H2 CLASS="section"><!--SEC ANCHOR --><A NAME="htoc2">2</A>  What are the advantages of atdgen?</H2><!--SEC END --><P>Atdgen has a number of advantages over its predecessor json-static
+</LI></UL><!--TOC section What are the advantages of Atdgen?-->
+<H2 CLASS="section"><!--SEC ANCHOR --><A NAME="htoc2">2</A>  What are the advantages of Atdgen?</H2><!--SEC END --><P>Atdgen has a number of advantages over its predecessor json-static
 which was based on Camlp4:
 </P><UL CLASS="itemize"><LI CLASS="li-itemize">
 produces explicit interfaces which describe what is available to
@@ -115,21 +115,13 @@ popular use of annotated type definitions. The implementation of
 such code generators is facilitated by the
 <A HREF="http://oss.wink.com/atd/"><TT>atd</TT></A> library.
 </LI></UL><!--TOC section Prerequisites-->
-<H2 CLASS="section"><!--SEC ANCHOR --><A NAME="htoc3">3</A>  Prerequisites</H2><!--SEC END --><P>This tutorial assumes that you are using atdgen version 1.2.0 or above.
+<H2 CLASS="section"><!--SEC ANCHOR --><A NAME="htoc3">3</A>  Prerequisites</H2><!--SEC END --><P>This tutorial assumes that you are using Atdgen version 1.2.0 or above.
 The following command tells you which version you are using:</P><PRE CLASS="verbatim">$ atdgen -version
-1.2.0+dev
-</PRE><P>At the time of writing, atdgen 1.2.0 has not
-been officially released but the development version is available from Github.
-You can fetch it using the following command:</P><PRE CLASS="verbatim">$ git clone git://github.com/MyLifeLabs/atdgen.git
-</PRE><P>A quick way of installing all the dependencies is via Godi.
-Run <TT>godi_console</TT> and install atdgen 1.1.1. You can then uninstall it
-but leave all its dependencies installed.</P><P>Now read the instructions in <TT>atdgen/INSTALL</TT> or just do:</P><PRE CLASS="verbatim">$ cd atdgen
-$ make
-$ make install
-</PRE><!--TOC section Getting started-->
-<H2 CLASS="section"><!--SEC ANCHOR --><A NAME="htoc4">4</A>  Getting started</H2><!--SEC END --><P>From now on we assume that atdgen 1.2.0 or above is installed properly.
-1.2.0+dev is fine.</P><PRE CLASS="verbatim">$ atdgen -version
-1.2.0+dev
+1.2.0
+</PRE><P>A quick way of installing Atdgen and all its dependencies is via Godi.</P><P>Alternatively, read and follow the instructions in the
+<TT>INSTALL</TT> file of the source package of Atdgen.</P><!--TOC section Getting started-->
+<H2 CLASS="section"><!--SEC ANCHOR --><A NAME="htoc4">4</A>  Getting started</H2><!--SEC END --><P>From now on we assume that Atdgen 1.2.0 or above is installed properly.</P><PRE CLASS="verbatim">$ atdgen -version
+1.2.0
 </PRE><P>Type definitions are placed in a <TT>.atd</TT> file (<TT>hello.atd</TT>):</P><PRE>
 <FONT COLOR="#007F00">type</FONT> date = {
   year : int;
@@ -601,7 +593,7 @@ The example below is self-explanatory.</P><P><TT>part1.atd</TT>:</P><PRE>
 It uses comments within <TT>(**</TT> and <TT>*)</TT> to produce hyperlinked documentation
 (HTML) of module signatures.</P><P>Atdgen can produce <TT>.mli</TT> files with comments in the syntax supported by 
 ocamldoc but regular ATD comments within <TT>(*</TT> and <TT>*)</TT> are always discarded
-by atdgen. Instead, <TT>&lt;doc text="..."&gt;</TT> must be used and placed after the 
+by Atdgen. Instead, <TT>&lt;doc text="..."&gt;</TT> must be used and placed after the 
 element they describe. The contents of the text field must be UTF8-encoded.</P><PRE>
 <FONT COLOR="#007F00">type</FONT> point = {
   x : float;
@@ -638,7 +630,7 @@ element they describe. The contents of the text field must be UTF8-encoded.</P><
 for inline code and <TT>{{{</TT> ... <TT>}}}</TT> for a block of preformatted code.</P><!--TOC section Integration with build systems-->
 <H2 CLASS="section"><!--SEC ANCHOR --><A NAME="htoc18">12</A>  Integration with build systems</H2><!--SEC END --><!--TOC subsubsection OMake-->
 <H4 CLASS="subsubsection"><!--SEC ANCHOR --><A NAME="htoc19">12.0.1</A>  OMake</H4><!--SEC END --><P>We provide an
-<A HREF="https://github.com/MyLifeLabs/atdgen-omake">atdgen
+<A HREF="https://github.com/MyLifeLabs/atdgen-omake">Atdgen
 plugin</A> for <A HREF="http://omake.metaprl.org">OMake</A>.
 It allows to simplify the compilation rules to a minimum.</P><P>The plugin consists of a self-documented file to copy into a project&#X2019;s
 root. The following is a sample <TT>OMakefile</TT> for a project using JSON and

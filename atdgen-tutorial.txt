@@ -1,4 +1,4 @@
- 
+   
                                      
                             Atdgen tutorial
                             ***************
@@ -13,8 +13,8 @@ Contents
 
    
   
-   - 1  What is atdgen? 
-   - 2  What are the advantages of atdgen? 
+   - 1  What is Atdgen? 
+   - 2  What are the advantages of Atdgen? 
    - 3  Prerequisites 
    - 4  Getting started 
    - 5  Inspecting and pretty-printing JSON 
@@ -43,7 +43,7 @@ Contents
    
   
 
-1  What is atdgen?
+1  What is Atdgen?
 *=*=*=*=*=*=*=*=*=
 
   
@@ -58,7 +58,7 @@ definitions. Currently it provides support for:
   
   
 
-2  What are the advantages of atdgen?
+2  What are the advantages of Atdgen?
 *=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*
 
   
@@ -83,37 +83,25 @@ which was based on Camlp4:
 *=*=*=*=*=*=*=*=
 
   
-  This tutorial assumes that you are using atdgen version 1.2.0 or
+  This tutorial assumes that you are using Atdgen version 1.2.0 or
 above. The following command tells you which version you are using:
 <<$ atdgen -version
-  1.2.0+dev
+  1.2.0
 >>
   
-  At the time of writing, atdgen 1.2.0 has not been officially released
-but the development version is available from Github. You can fetch it
-using the following command:
-<<$ git clone git://github.com/MyLifeLabs/atdgen.git
->>
-  
-  A quick way of installing all the dependencies is via Godi. Run
-godi_console and install atdgen 1.1.1. You can then uninstall it but
-leave all its dependencies installed.
-  Now read the instructions in atdgen/INSTALL or just do:
-<<$ cd atdgen
-  $ make
-  $ make install
->>
-  
+  A quick way of installing Atdgen and all its dependencies is via Godi.
+  Alternatively, read and follow the instructions in the INSTALL file of
+the source package of Atdgen.
   
 
 4  Getting started
 *=*=*=*=*=*=*=*=*=
 
   
-  From now on we assume that atdgen 1.2.0 or above is installed
-properly. 1.2.0+dev is fine.
+  From now on we assume that Atdgen 1.2.0 or above is installed
+properly.
 <<$ atdgen -version
-  1.2.0+dev
+  1.2.0
 >>
   
   Type definitions are placed in a .atd file (hello.atd):
@@ -817,7 +805,7 @@ uses comments within (** and *) to produce hyperlinked documentation
 (HTML) of module signatures.
   Atdgen can produce .mli files with comments in the syntax supported by
  ocamldoc but regular ATD comments within (* and *) are always discarded
-by atdgen. Instead, <doc text="..."> must be used and placed after the 
+by Atdgen. Instead, <doc text="..."> must be used and placed after the 
 element they describe. The contents of the text field must be
 UTF8-encoded.
 <<
@@ -871,7 +859,7 @@ comments:
 12.0.1  OMake
 -------------
   
-  We provide an atdgen plugin (5) for OMake (6). It allows to simplify
+  We provide an Atdgen plugin (5) for OMake (6). It allows to simplify
 the compilation rules to a minimum.
   The plugin consists of a self-documented file to copy into a project's
 root. The following is a sample OMakefile for a project using JSON and
