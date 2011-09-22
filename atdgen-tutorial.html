@@ -639,17 +639,21 @@ fields, including those whose value is the default.
   "credentials": [ { "name": "foo", "key": "0123456789abcdef" } ]
 }
 
-$ ./config -format 
+$ ./config -format
 type config = {
   title : string;
   ?description : string option;
   ~timeout &lt;ocaml default="10"&gt; : int;
-  ~credentials : param list;
+  ~credentials : param list
+    &lt;ocaml validator="fun l -&gt;
+                        l &lt;&gt; [] || failwith \"missing credentials\""&gt;;
 }
 
 type param = {
-  name : string;
-  key : string;
+  name : string
+    &lt;ocaml validator="fun s -&gt; s &lt;&gt; \"\""&gt;;
+  key : string
+    &lt;ocaml validator="fun s -&gt; String.length s = 16"&gt;;
 }
 
 $ cat sample-config.json

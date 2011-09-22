@@ -1,4 +1,4 @@
-   
+ 
                                      
                             Atdgen tutorial
                             ***************
@@ -851,17 +851,21 @@ an example of how to use atdgen to manage config files.
     "credentials": [ { "name": "foo", "key": "0123456789abcdef" } ]
   }
   
-  $ ./config -format 
+  $ ./config -format
   type config = {
     title : string;
     ?description : string option;
     ~timeout <ocaml default="10"> : int;
-    ~credentials : param list;
+    ~credentials : param list
+      <ocaml validator="fun l ->
+                          l <> [] || failwith \"missing credentials\"">;
   }
   
   type param = {
-    name : string;
-    key : string;
+    name : string
+      <ocaml validator="fun s -> s <> \"\"">;
+    key : string
+      <ocaml validator="fun s -> String.length s = 16">;
   }
   
   $ cat sample-config.json
