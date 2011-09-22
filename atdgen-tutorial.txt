@@ -1,4 +1,4 @@
- 
+   
                                      
                             Atdgen tutorial
                             ***************
@@ -825,6 +825,71 @@ an example of how to use atdgen to manage config files.
    serialized into JSON containing all fields, including those whose
    value is the default. 
   
+  The example uses the following type definitions: 
+<<type config = {
+    title : string;
+    ?description : string option;
+    ~timeout <ocaml default="10"> : int;
+    ~credentials : param list
+      <ocaml validator="fun l ->
+                          l <> [] || failwith \"missing credentials\"">;
+  }
+  
+  type param = {
+    name : string
+      <ocaml validator="fun s -> s <> \"\"">;
+    key : string
+      <ocaml validator="fun s -> String.length s = 16">;
+  }
+>>
+  
+  Our program will perform the following actions: 
+<<$ ./config -template
+  {
+    "title": "",
+    "timeout": 10,
+    "credentials": [ { "name": "foo", "key": "0123456789abcdef" } ]
+  }
+  
+  $ ./config -format 
+  type config = {
+    title : string;
+    ?description : string option;
+    ~timeout <ocaml default="10"> : int;
+    ~credentials : param list;
+  }
+  
+  type param = {
+    name : string;
+    key : string;
+  }
+  
+  $ cat sample-config.json
+  {
+    "title": "Example",
+    "credentials": [
+      {
+        "name": "joeuser",
+        "key": "db7c0877bdef3016"
+      },
+      {
+        "name": "tester",
+        "key": "09871ff387ac2b10"
+      }
+    ]
+  }
+  
+  $ ./config -validate sample-config.json
+  {
+    "title": "Example",
+    "timeout": 10,
+    "credentials": [
+      { "name": "joeuser", "key": "db7c0877bdef3016" },
+      { "name": "tester", "key": "09871ff387ac2b10" }
+    ]
+  }
+>>
+  
   This is our demo.sh script that builds and runs our example program
 called config: 
 <<#! /bin/sh -e
@@ -860,22 +925,12 @@ config_v.ml \
   # Fail to validate an invalid config file
   ./config -validate bad-config1.json || :
   
+  # Fail to validate another invalid config file (using custom
+validators)
+  ./config -validate bad-config3.json || :
+  
   # Validate, inject missing defaults and pretty-print
   ./config -validate sample-config.json
->>
-  
-  The example uses the following type definitions: 
-<<type config = {
-    title : string;
-    ?description : string option;
-    ~timeout <ocaml default="10"> : int;
-    ~credentials : param list;
-  }
-  
-  type param = {
-    name : string;
-    key : string;
-  }
 >>
   
   This is the hand-written OCaml program. It can be used as a start
@@ -916,7 +971,12 @@ point for a real-world program using a JSON config file:
     let x =
       try
         (* Read config data structure from JSON file *)
-        Ag_util.Json.from_file Config_j.read_config fname
+        let x = Ag_util.Json.from_file Config_j.read_config fname in
+        (* Call the validators specified by <ocaml validator=...> *)
+        if not (Config_v.validate_config x) then
+          failwith "Some fields are invalid"
+        else
+          x
       with e ->
         (* Print decent error message and exit *)
         let msg =

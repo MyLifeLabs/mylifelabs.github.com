@@ -615,7 +615,68 @@ JSON string and returns an equivalent JSON string.
 passing the <TT>-j-defaults</TT> option to <TT>atdgen</TT>.
 The OCaml config data is then serialized into JSON containing all
 fields, including those whose value is the default.
-</LI></UL><P>This is our <TT>demo.sh</TT> script that builds and runs our example
+</LI></UL><P>The example uses the following type definitions:
+</P><PRE><FONT COLOR="#007F00">type</FONT> config = {
+  title : string;
+  ?description : string option;
+  ~timeout &lt;ocaml default=<FONT COLOR="#AA4444">"10"</FONT>&gt; : int;
+  ~credentials : param list
+    &lt;ocaml validator=<FONT COLOR="#AA4444">"fun l -&gt;</FONT>
+<FONT COLOR="#AA4444">                        l &lt;&gt; [] || failwith </FONT><FONT COLOR="#AA4444">\</FONT><FONT COLOR="#AA4444">"missing credentials</FONT><FONT COLOR="#AA4444">\</FONT><FONT COLOR="#AA4444">""</FONT>&gt;;
+}
+
+<FONT COLOR="#007F00">type</FONT> param = {
+  name : string
+    &lt;ocaml validator=<FONT COLOR="#AA4444">"fun s -&gt; s &lt;&gt; </FONT><FONT COLOR="#AA4444">\</FONT><FONT COLOR="#AA4444">"</FONT><FONT COLOR="#AA4444">\</FONT><FONT COLOR="#AA4444">""</FONT>&gt;;
+  key : string
+    &lt;ocaml validator=<FONT COLOR="#AA4444">"fun s -&gt; String.length s = 16"</FONT>&gt;;
+}
+</PRE><P>Our program will perform the following actions:
+</P><PRE CLASS="verbatim">$ ./config -template
+{
+  "title": "",
+  "timeout": 10,
+  "credentials": [ { "name": "foo", "key": "0123456789abcdef" } ]
+}
+
+$ ./config -format 
+type config = {
+  title : string;
+  ?description : string option;
+  ~timeout &lt;ocaml default="10"&gt; : int;
+  ~credentials : param list;
+}
+
+type param = {
+  name : string;
+  key : string;
+}
+
+$ cat sample-config.json
+{
+  "title": "Example",
+  "credentials": [
+    {
+      "name": "joeuser",
+      "key": "db7c0877bdef3016"
+    },
+    {
+      "name": "tester",
+      "key": "09871ff387ac2b10"
+    }
+  ]
+}
+
+$ ./config -validate sample-config.json
+{
+  "title": "Example",
+  "timeout": 10,
+  "credentials": [
+    { "name": "joeuser", "key": "db7c0877bdef3016" },
+    { "name": "tester", "key": "09871ff387ac2b10" }
+  ]
+}
+</PRE><P>This is our <TT>demo.sh</TT> script that builds and runs our example
 program called <TT>config</TT>:
 </P><PRE CLASS="verbatim">#! /bin/sh -e
 
@@ -649,20 +710,11 @@ ocamlfind ocamlopt -o config \
 # Fail to validate an invalid config file
 ./config -validate bad-config1.json || :
 
+# Fail to validate another invalid config file (using custom validators)
+./config -validate bad-config3.json || :
+
 # Validate, inject missing defaults and pretty-print
 ./config -validate sample-config.json
-</PRE><P>The example uses the following type definitions:
-</P><PRE><FONT COLOR="#007F00">type</FONT> config = {
-  title : string;
-  ?description : string option;
-  ~timeout &lt;ocaml default=<FONT COLOR="#AA4444">"10"</FONT>&gt; : int;
-  ~credentials : param list;
-}
-
-<FONT COLOR="#007F00">type</FONT> param = {
-  name : string;
-  key : string;
-}
 </PRE><P>This is the hand-written OCaml program. It can be used as a start
 point for a real-world program using a JSON config file:
 </P><PRE><FONT COLOR="#CC9900">open</FONT> <FONT COLOR="#0033CC">Printf</FONT>
@@ -701,7 +753,12 @@ point for a real-world program using a JSON config file:
   <FONT COLOR="#007F00">let</FONT> x =
     <FONT COLOR="#77AAAA">try</FONT>
       <FONT COLOR="#990000">(* Read config data structure from JSON file *)</FONT>
-      <FONT COLOR="#0033CC">Ag_util</FONT>.<FONT COLOR="#0033CC">Json</FONT>.from_file <FONT COLOR="#0033CC">Config_j</FONT>.read_config fname
+      <FONT COLOR="#007F00">let</FONT> x = <FONT COLOR="#0033CC">Ag_util</FONT>.<FONT COLOR="#0033CC">Json</FONT>.from_file <FONT COLOR="#0033CC">Config_j</FONT>.read_config fname <FONT COLOR="#007F00">in</FONT>
+      <FONT COLOR="#990000">(* Call the validators specified by &lt;ocaml validator=...&gt; *)</FONT>
+      <FONT COLOR="#77AAAA">if</FONT> not (<FONT COLOR="#0033CC">Config_v</FONT>.validate_config x) <FONT COLOR="#77AAAA">then</FONT>
+        failwith <FONT COLOR="#AA4444">"Some fields are invalid"</FONT>
+      <FONT COLOR="#77AAAA">else</FONT>
+        x
     <FONT COLOR="#77AAAA">with</FONT> e -&gt;
       <FONT COLOR="#990000">(* Print decent error message and exit *)</FONT>
       <FONT COLOR="#007F00">let</FONT> msg =
