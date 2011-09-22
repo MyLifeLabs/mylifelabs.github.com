@@ -49,6 +49,7 @@ TD P{margin:0px;}
     margin-top: 3em;
     margin-left: auto;
     margin-right: auto;
+    margin-bottom: 7em;
     width: 45em;
     text-align: left;
 }
@@ -79,12 +80,13 @@ TD P{margin:0px;}
 </LI></UL>
 </LI><LI CLASS="li-toc"><A HREF="#htoc15">9  Data validation</A>
 </LI><LI CLASS="li-toc"><A HREF="#htoc16">10  Modularity: referring to type definitions from another ATD file</A>
-</LI><LI CLASS="li-toc"><A HREF="#htoc17">11  Integration with ocamldoc</A>
-</LI><LI CLASS="li-toc"><A HREF="#htoc18">12  Integration with build systems</A>
+</LI><LI CLASS="li-toc"><A HREF="#htoc17">11  Managing JSON configuration files</A>
+</LI><LI CLASS="li-toc"><A HREF="#htoc18">12  Integration with ocamldoc</A>
+</LI><LI CLASS="li-toc"><A HREF="#htoc19">13  Integration with build systems</A>
 <UL CLASS="toc">
 <UL CLASS="toc"><LI CLASS="li-toc">
-<A HREF="#htoc19">12.0.1  OMake</A>
-</LI><LI CLASS="li-toc"><A HREF="#htoc20">12.0.2  GNU Make</A>
+<A HREF="#htoc20">13.0.1  OMake</A>
+</LI><LI CLASS="li-toc"><A HREF="#htoc21">13.0.2  GNU Make</A>
 </LI></UL>
 </UL>
 </LI></UL><!--TOC section What is Atdgen?-->
@@ -298,14 +300,15 @@ The following now works:</P><PRE CLASS="verbatim">$ bdump tree.dat
         &lt;"Node": (&lt;"Empty"&gt;, 5, &lt;"Empty"&gt;)&gt;)&gt;)&gt;
 </PRE><P>Source code for this section:
 <A HREF="https://github.com/MyLifeLabs/atdgen-tutorial/tree/master/inspect-biniou"><TT>https://github.com/MyLifeLabs/atdgen-tutorial/tree/master/inspect-biniou</TT></A></P><!--TOC section Optional fields and default values-->
-<H2 CLASS="section"><!--SEC ANCHOR --><A NAME="htoc7">7</A>  Optional fields and default values</H2><!--SEC END --><P>Although OCaml records do not support optional fields, both the JSON
+<H2 CLASS="section"><!--SEC ANCHOR --><A NAME="htoc7">7</A>  <A NAME="defaults"></A>Optional fields and default values</H2><!--SEC END --><P>Although OCaml records do not support optional fields, both the JSON
 and biniou formats make it possible to omit certain fields on a
 per-record basis.</P><P>For example the JSON record <TT>{ "x": 0, "y": 0 }</TT> can be more
 compactly written as <TT>{}</TT> if the reader knows the default values for
 the missing fields <TT>x</TT> and <TT>y</TT>. Here is the corresponding type
 definition:</P><PRE>
 <FONT COLOR="#007F00">type</FONT> vector_v1 = { ~x: int; ~y: int }
-</PRE><P><TT>~x</TT> means that field <TT>x</TT> supports a default value. Since we do not
+</PRE><P><TT>~x</TT> means that field <TT>x</TT> supports a default
+value. Since we do not 
 specify the default value ourselves, the built-in default is used,
 which is 0.</P><P>If we want the default to be something else than 0, we just have to
 specify it as follows:</P><PRE>
@@ -404,7 +407,8 @@ in an ATD file,
 based on user-given validators specified only for certain types.
 A simple example is:</P><PRE>
 <FONT COLOR="#007F00">type</FONT> t = string &lt;ocaml validator=<FONT COLOR="#AA4444">"fun s -&gt; String.length s &gt;= 8"</FONT>&gt; option
-</PRE><P><TT>atdgen -v</TT> will produce something equivalent to the following implementation:</P><PRE>
+</PRE><P><TT>atdgen -v</TT> will produce something equivalent to the following
+implementation: </P><PRE>
 <FONT COLOR="#007F00">let</FONT> validate_t x =
   <FONT COLOR="#77AAAA">match</FONT> x <FONT COLOR="#77AAAA">with</FONT>
       <FONT COLOR="#0033CC">None</FONT> -&gt; true
@@ -413,14 +417,15 @@ A simple example is:</P><PRE>
 in a separate .ml file. We created the following 3 source files:</P><UL CLASS="itemize"><LI CLASS="li-itemize">
 <TT>resume.atd</TT>: contains the type definitions with annotations
 </LI><LI CLASS="li-itemize"><TT>resume_util.ml</TT>: contains our handwritten validators
-</LI><LI CLASS="li-itemize"><TT>resume.ml</TT>: is our main program that creates data and calls the validators
+</LI><LI CLASS="li-itemize"><TT>resume.ml</TT>: is our main program that creates data and
+calls the validators 
 </LI></UL><P>In terms of OCaml modules we have:</P><UL CLASS="itemize"><LI CLASS="li-itemize">
 <TT>Resume_t</TT>: produced by <TT>atdgen -t resume.atd</TT>, 
 provides OCaml type definitions
-</LI><LI CLASS="li-itemize"><TT>Resume_util</TT>: depends on <TT>Resume_t</TT>, provides validators mentioned
-in <TT>resume.atd</TT>
-</LI><LI CLASS="li-itemize"><TT>Resume_v</TT>: produced by <TT>atdgen -v resume.atd</TT>, depends on <TT>Resume_util</TT>,
-provides a validator for each type
+</LI><LI CLASS="li-itemize"><TT>Resume_util</TT>: depends on <TT>Resume_t</TT>, provides
+validators mentioned in <TT>resume.atd</TT>
+</LI><LI CLASS="li-itemize"><TT>Resume_v</TT>: produced by <TT>atdgen -v resume.atd</TT>,
+depends on <TT>Resume_util</TT>, provides a validator for each type
 </LI><LI CLASS="li-itemize"><TT>Resume</TT>: depends on <TT>Resume_v</TT>, uses the validators
 </LI></UL><P>Type definitions are placed in <TT>resume.atd</TT>:</P><PRE>
 <FONT COLOR="#007F00">type</FONT> text = string &lt;ocaml validator=<FONT COLOR="#AA4444">"Resume_util.validate_some_text"</FONT>&gt;
@@ -492,8 +497,8 @@ provides a validator for each type
       <FONT COLOR="#0033CC">None</FONT> -&gt; true
     <FONT COLOR="#77AAAA">|</FONT> <FONT COLOR="#0033CC">Some</FONT> end_date -&gt;
         compare_date x.start_date end_date &lt;= 0
-</PRE><P><TT>resume.ml</TT> uses the <TT>validate_work_experience</TT> function provided 
-by the <TT>Resume_v</TT> module:</P><PRE>
+</PRE><P><TT>resume.ml</TT> uses the <TT>validate_work_experience</TT>
+function provided by the <TT>Resume_v</TT> module:</P><PRE>
 <FONT COLOR="#007F00">let</FONT> check_experience x =
   <FONT COLOR="#007F00">let</FONT> is_valid = <FONT COLOR="#0033CC">Resume_v</FONT>.validate_work_experience x <FONT COLOR="#007F00">in</FONT>
   <FONT COLOR="#0033CC">Printf</FONT>.printf <FONT COLOR="#AA4444">"%s:</FONT><FONT COLOR="#AA4444">\</FONT><FONT COLOR="#AA4444">n%s</FONT><FONT COLOR="#AA4444">\</FONT><FONT COLOR="#AA4444">n"</FONT>
@@ -588,11 +593,174 @@ The example below is self-explanatory.</P><P><TT>part1.atd</TT>:</P><PRE>
   print_newline ()
 </PRE><P>Output:</P><PRE CLASS="verbatim">{"name":"foo","data":[{"x":1,"y":2},{"x":3,"y":4}]}
 </PRE><P>Source code for this section:
-<A HREF="https://github.com/MyLifeLabs/atdgen-tutorial/tree/master/modularity"><TT>https://github.com/MyLifeLabs/atdgen-tutorial/tree/master/modularity</TT></A></P><!--TOC section Integration with ocamldoc-->
-<H2 CLASS="section"><!--SEC ANCHOR --><A NAME="htoc17">11</A>  Integration with ocamldoc</H2><!--SEC END --><P>Ocamldoc is a tool that comes with the core OCaml distribution.
-It uses comments within <TT>(**</TT> and <TT>*)</TT> to produce hyperlinked documentation
-(HTML) of module signatures.</P><P>Atdgen can produce <TT>.mli</TT> files with comments in the syntax supported by 
-ocamldoc but regular ATD comments within <TT>(*</TT> and <TT>*)</TT> are always discarded
+<A HREF="https://github.com/MyLifeLabs/atdgen-tutorial/tree/master/modularity"><TT>https://github.com/MyLifeLabs/atdgen-tutorial/tree/master/modularity</TT></A></P><!--TOC section Managing JSON configuration files-->
+<H2 CLASS="section"><!--SEC ANCHOR --><A NAME="htoc17">11</A>  Managing JSON configuration files</H2><!--SEC END --><P>JSON makes a good format for configuration files because it is
+human-readable, easy to modify programmatically and widespread.
+Here is an example of how to use atdgen to manage config files.</P><UL CLASS="itemize"><LI CLASS="li-itemize">
+<B>Specifying defaults</B> is done in the .atd file. See
+section <A HREF="#defaults">7</A> for details on how to do that.
+</LI><LI CLASS="li-itemize"><B>Auto-generating a template config file with default values</B>:
+a sample value in the OCaml world needs to be created but only
+fields without default need to be specified.
+</LI><LI CLASS="li-itemize"><B>Describing the format</B> is achieved by embedding the .atd
+type definitions in the OCaml program and printing it out on request.
+</LI><LI CLASS="li-itemize"><B>Loading a config file and reporting illegal fields</B> is
+achieved using the JSON deserializers produced by <TT>atdgen
+-j</TT>. Option <TT>-j-strict-fields</TT> ensures the misspelled field
+names are not ignored but reported as errors.
+</LI><LI CLASS="li-itemize"><B>Reindenting a config file</B> is achieved by the
+pretty-printing function <TT>Yojson.Safe.prettify</TT> that takes a
+JSON string and returns an equivalent JSON string.
+</LI><LI CLASS="li-itemize"><B>Showing implicit (default) settings</B> is achieved by
+passing the <TT>-j-defaults</TT> option to <TT>atdgen</TT>.
+The OCaml config data is then serialized into JSON containing all
+fields, including those whose value is the default.
+</LI></UL><P>This is our <TT>demo.sh</TT> script that builds and runs our example
+program called <TT>config</TT>:
+</P><PRE CLASS="verbatim">#! /bin/sh -e
+
+set -x
+
+# Embed the contents of the .atd file into our OCaml program
+echo 'let contents = "\' &gt; config_atd.ml
+sed -e 's/\([\\"]\)/\\\1/g' config.atd &gt;&gt; config_atd.ml
+echo '"' &gt;&gt; config_atd.ml
+
+# Derive OCaml type definitions from .atd file
+atdgen -t config.atd
+
+# Derive JSON-related functions from .atd file
+atdgen -j -j-defaults -j-strict-fields config.atd
+
+# Derive validator from .atd file
+atdgen -v config.atd
+
+# Compile the OCaml program
+ocamlfind ocamlopt -o config \
+  config_t.mli config_t.ml config_j.mli config_j.ml config_v.mli config_v.ml \
+  config_atd.ml config.ml -package atdgen -linkpkg
+
+# Output a sample config
+./config -template
+
+# Print the original type definitions
+./config -format
+
+# Fail to validate an invalid config file
+./config -validate bad-config1.json || :
+
+# Validate, inject missing defaults and pretty-print
+./config -validate sample-config.json
+</PRE><P>The example uses the following type definitions:
+</P><PRE><FONT COLOR="#007F00">type</FONT> config = {
+  title : string;
+  ?description : string option;
+  ~timeout &lt;ocaml default=<FONT COLOR="#AA4444">"10"</FONT>&gt; : int;
+  ~credentials : param list;
+}
+
+<FONT COLOR="#007F00">type</FONT> param = {
+  name : string;
+  key : string;
+}
+</PRE><P>This is the hand-written OCaml program. It can be used as a start
+point for a real-world program using a JSON config file:
+</P><PRE><FONT COLOR="#CC9900">open</FONT> <FONT COLOR="#0033CC">Printf</FONT>
+
+<FONT COLOR="#007F00">let</FONT> param_template =
+  <FONT COLOR="#990000">(* Sample item used to populate the template config file *)</FONT>
+  {
+    <FONT COLOR="#0033CC">Config_v</FONT>.name = <FONT COLOR="#AA4444">"foo"</FONT>;
+    key = <FONT COLOR="#AA4444">"0123456789abcdef"</FONT>
+  }
+
+<FONT COLOR="#007F00">let</FONT> config_template =
+  <FONT COLOR="#990000">(*</FONT>
+<FONT COLOR="#990000">    Records can be conveniently created using functions generated by</FONT>
+<FONT COLOR="#990000">    "atdgen -v".</FONT>
+<FONT COLOR="#990000">    Here we use Config_v.create_config to create a record of type</FONT>
+<FONT COLOR="#990000">    Config_t.config. The big advantage over creating the record </FONT>
+<FONT COLOR="#990000">    directly using the record notation {...} is that we don&#X2019;t have to</FONT>
+<FONT COLOR="#990000">    specify default values (such as timeout in this example).</FONT>
+<FONT COLOR="#990000">  *)</FONT>
+  <FONT COLOR="#0033CC">Config_v</FONT>.create_config ~title:<FONT COLOR="#AA4444">""</FONT> ~credentials: [param_template] ()
+
+<FONT COLOR="#007F00">let</FONT> make_json_template () =
+  <FONT COLOR="#990000">(* Thanks to the -j-defaults flag passed to atdgen, even default</FONT>
+<FONT COLOR="#990000">     fields will be printed out *)</FONT>
+  <FONT COLOR="#007F00">let</FONT> compact_json = <FONT COLOR="#0033CC">Config_j</FONT>.string_of_config config_template <FONT COLOR="#007F00">in</FONT>
+  <FONT COLOR="#0033CC">Yojson</FONT>.<FONT COLOR="#0033CC">Safe</FONT>.prettify compact_json
+
+<FONT COLOR="#007F00">let</FONT> print_template () =
+  print_endline (make_json_template ())
+
+<FONT COLOR="#007F00">let</FONT> print_format () =
+  print_string <FONT COLOR="#0033CC">Config_atd</FONT>.contents
+
+<FONT COLOR="#007F00">let</FONT> validate fname =
+  <FONT COLOR="#007F00">let</FONT> x =
+    <FONT COLOR="#77AAAA">try</FONT>
+      <FONT COLOR="#990000">(* Read config data structure from JSON file *)</FONT>
+      <FONT COLOR="#0033CC">Ag_util</FONT>.<FONT COLOR="#0033CC">Json</FONT>.from_file <FONT COLOR="#0033CC">Config_j</FONT>.read_config fname
+    <FONT COLOR="#77AAAA">with</FONT> e -&gt;
+      <FONT COLOR="#990000">(* Print decent error message and exit *)</FONT>
+      <FONT COLOR="#007F00">let</FONT> msg =
+        <FONT COLOR="#77AAAA">match</FONT> e <FONT COLOR="#77AAAA">with</FONT>
+            <FONT COLOR="#0033CC">Failure</FONT> s
+          <FONT COLOR="#77AAAA">|</FONT> <FONT COLOR="#0033CC">Yojson</FONT>.<FONT COLOR="#0033CC">Json_error</FONT> s -&gt; s
+          <FONT COLOR="#77AAAA">|</FONT> e -&gt; <FONT COLOR="#0033CC">Printexc</FONT>.to_string e
+      <FONT COLOR="#007F00">in</FONT>
+      eprintf <FONT COLOR="#AA4444">"Error: %s</FONT><FONT COLOR="#AA4444">\</FONT><FONT COLOR="#AA4444">n%!"</FONT> msg;
+      exit 1
+  <FONT COLOR="#007F00">in</FONT>
+  <FONT COLOR="#990000">(* Convert config to compact JSON and pretty-print it.</FONT>
+<FONT COLOR="#990000">     ~std:true means that the output will not use extended syntax for</FONT>
+<FONT COLOR="#990000">     variants and tuples but only standard JSON. *)</FONT>
+  <FONT COLOR="#007F00">let</FONT> json = <FONT COLOR="#0033CC">Yojson</FONT>.<FONT COLOR="#0033CC">Safe</FONT>.prettify ~std:true (<FONT COLOR="#0033CC">Config_j</FONT>.string_of_config x) <FONT COLOR="#007F00">in</FONT>
+  print_endline json
+
+<FONT COLOR="#007F00">type</FONT> action = <FONT COLOR="#0033CC">Template</FONT> <FONT COLOR="#77AAAA">|</FONT> <FONT COLOR="#0033CC">Format</FONT> <FONT COLOR="#77AAAA">|</FONT> <FONT COLOR="#0033CC">Validate</FONT> <FONT COLOR="#007F00">of</FONT> string
+
+<FONT COLOR="#007F00">let</FONT> main () =
+  <FONT COLOR="#007F00">let</FONT> action = ref <FONT COLOR="#0033CC">Template</FONT> <FONT COLOR="#007F00">in</FONT>
+  <FONT COLOR="#007F00">let</FONT> options = [
+    <FONT COLOR="#AA4444">"-template"</FONT>, <FONT COLOR="#0033CC">Arg</FONT>.<FONT COLOR="#0033CC">Unit</FONT> (<FONT COLOR="#007F00">fun</FONT> () -&gt; action := <FONT COLOR="#0033CC">Template</FONT>),
+    <FONT COLOR="#AA4444">"</FONT>
+<FONT COLOR="#AA4444">          prints a sample configuration file"</FONT>;
+
+    <FONT COLOR="#AA4444">"-format"</FONT>, <FONT COLOR="#0033CC">Arg</FONT>.<FONT COLOR="#0033CC">Unit</FONT> (<FONT COLOR="#007F00">fun</FONT> () -&gt; action := <FONT COLOR="#0033CC">Format</FONT>),
+    <FONT COLOR="#AA4444">"</FONT>
+<FONT COLOR="#AA4444">          prints the format specification of the config files (atd format)"</FONT>;
+
+    <FONT COLOR="#AA4444">"-validate"</FONT>, <FONT COLOR="#0033CC">Arg</FONT>.<FONT COLOR="#0033CC">String</FONT> (<FONT COLOR="#007F00">fun</FONT> s -&gt; action := <FONT COLOR="#0033CC">Validate</FONT> s),
+    <FONT COLOR="#AA4444">"&lt;CONFIG FILE&gt;</FONT>
+<FONT COLOR="#AA4444">          reads a config file, validates it, adds default values</FONT>
+<FONT COLOR="#AA4444">          and prints the config nicely to stdout"</FONT>;
+  ]
+  <FONT COLOR="#007F00">in</FONT>
+  <FONT COLOR="#007F00">let</FONT> usage_msg = sprintf <FONT COLOR="#AA4444">"</FONT><FONT COLOR="#AA4444">\</FONT>
+<FONT COLOR="#AA4444">Usage: %s [-template|-format|-validate ...]</FONT>
+<FONT COLOR="#AA4444">Demonstration of how to manage JSON configuration files with atdgen.</FONT>
+<FONT COLOR="#AA4444">"</FONT>
+    <FONT COLOR="#0033CC">Sys</FONT>.argv.(0)
+  <FONT COLOR="#007F00">in</FONT>
+  <FONT COLOR="#007F00">let</FONT> anon_fun s = eprintf <FONT COLOR="#AA4444">"Invalid command parameter %S</FONT><FONT COLOR="#AA4444">\</FONT><FONT COLOR="#AA4444">n%!"</FONT> s; exit 1 <FONT COLOR="#007F00">in</FONT>
+  <FONT COLOR="#0033CC">Arg</FONT>.parse options anon_fun usage_msg;
+
+  <FONT COLOR="#77AAAA">match</FONT> !action <FONT COLOR="#77AAAA">with</FONT>
+      <FONT COLOR="#0033CC">Template</FONT> -&gt; print_template ()
+    <FONT COLOR="#77AAAA">|</FONT> <FONT COLOR="#0033CC">Format</FONT> -&gt; print_format ()
+    <FONT COLOR="#77AAAA">|</FONT> <FONT COLOR="#0033CC">Validate</FONT> s -&gt; validate s
+
+<FONT COLOR="#007F00">let</FONT> () = main ()
+</PRE><P>The full source code for this section with examples can be inspected
+and downloaded here:
+<A HREF="https://github.com/MyLifeLabs/atdgen-tutorial/tree/master/config-file"><TT>https://github.com/MyLifeLabs/atdgen-tutorial/tree/master/config-file</TT></A></P><!--TOC section Integration with ocamldoc-->
+<H2 CLASS="section"><!--SEC ANCHOR --><A NAME="htoc18">12</A>  Integration with ocamldoc</H2><!--SEC END --><P>Ocamldoc is a tool that comes with the core OCaml distribution.
+It uses comments within <TT>(**</TT> and <TT>*)</TT> to produce
+hyperlinked documentation (HTML) of module signatures.</P><P>Atdgen can produce <TT>.mli</TT> files with comments in the syntax supported by 
+ocamldoc but regular ATD comments within <TT>(*</TT> and <TT>*)</TT>
+are always discarded 
 by Atdgen. Instead, <TT>&lt;doc text="..."&gt;</TT> must be used and placed after the 
 element they describe. The contents of the text field must be UTF8-encoded.</P><PRE>
 <FONT COLOR="#007F00">type</FONT> point = {
@@ -610,7 +778,8 @@ element they describe. The contents of the text field must be UTF8-encoded.</P><
 <FONT COLOR="#AA4444">  { x = 0.5; y = 1.0; z = 0. } </FONT>
 <FONT COLOR="#AA4444">}}}</FONT>
 <FONT COLOR="#AA4444">"</FONT>&gt;
-</PRE><P>is converted into the following <TT>.mli</TT> file with ocamldoc-compatible comments:</P><PRE>
+</PRE><P>is converted into the following <TT>.mli</TT> file with
+ocamldoc-compatible comments: </P><PRE>
 <FONT COLOR="#990000">(**</FONT>
 <FONT COLOR="#990000">  Point with optional 3rd dimension.</FONT>
 <FONT COLOR="#990000">  </FONT>
@@ -626,10 +795,12 @@ element they describe. The contents of the text field must be UTF8-encoded.</P><
   y: float;
   z: float <FONT COLOR="#990000">(** Optional depth, its default value is [0.0]. *)</FONT>
 }
-</PRE><P>The only two forms of markup supported by <TT>&lt;doc text="..."&gt;</TT> are <TT>{{</TT> ... <TT>}}</TT>
-for inline code and <TT>{{{</TT> ... <TT>}}}</TT> for a block of preformatted code.</P><!--TOC section Integration with build systems-->
-<H2 CLASS="section"><!--SEC ANCHOR --><A NAME="htoc18">12</A>  Integration with build systems</H2><!--SEC END --><!--TOC subsubsection OMake-->
-<H4 CLASS="subsubsection"><!--SEC ANCHOR --><A NAME="htoc19">12.0.1</A>  OMake</H4><!--SEC END --><P>We provide an
+</PRE><P>The only two forms of markup supported by <TT>&lt;doc text="..."&gt;</TT>
+are <TT>{{</TT> ... <TT>}}</TT> 
+for inline code and <TT>{{{</TT> ... <TT>}}}</TT> for a block of
+preformatted code. </P><!--TOC section Integration with build systems-->
+<H2 CLASS="section"><!--SEC ANCHOR --><A NAME="htoc19">13</A>  Integration with build systems</H2><!--SEC END --><!--TOC subsubsection OMake-->
+<H4 CLASS="subsubsection"><!--SEC ANCHOR --><A NAME="htoc20">13.0.1</A>  OMake</H4><!--SEC END --><P>We provide an
 <A HREF="https://github.com/MyLifeLabs/atdgen-omake">Atdgen
 plugin</A> for <A HREF="http://omake.metaprl.org">OMake</A>.
 It allows to simplify the compilation rules to a minimum.</P><P>The plugin consists of a self-documented file to copy into a project&#X2019;s
@@ -654,7 +825,7 @@ clean:
 <TT>foobar.opt</TT>.</P><P><TT>omake clean</TT> removes all the products
 of compilation including the <TT>.mli</TT> and <TT>.ml</TT> produced
 by <TT>atdgen</TT>.</P><!--TOC subsubsection GNU Make-->
-<H4 CLASS="subsubsection"><!--SEC ANCHOR --><A NAME="htoc20">12.0.2</A>  GNU Make</H4><!--SEC END --><P>We provide 
+<H4 CLASS="subsubsection"><!--SEC ANCHOR --><A NAME="htoc21">13.0.2</A>  GNU Make</H4><!--SEC END --><P>We provide 
 <A HREF="https://github.com/MyLifeLabs/atdgen-omake"><TT>Atdgen.mk</TT></A>,
 a generic makefile that defines the 
 dependencies and rules for generating OCaml <TT>.mli</TT> and
@@ -695,8 +866,8 @@ and options which are documented in <TT>OCamlMakefile</TT>&#X2019;s README.
 <!--HTMLFOOT-->
 <!--ENDHTML-->
 <!--FOOTER-->
-<HR SIZE=2><BLOCKQUOTE CLASS="quote"><EM>This document was translated from L<sup>A</sup>T<sub>E</sub>X by
-</EM><A HREF="http://hevea.inria.fr/index.html"><EM>H</EM><EM><FONT SIZE=2><sup>E</sup></FONT></EM><EM>V</EM><EM><FONT SIZE=2><sup>E</sup></FONT></EM><EM>A</EM></A><EM>.</EM></BLOCKQUOTE><!--END-->
+
+<!--END-->
 </div>
 </BODY>
 </HTML>

@@ -1,4 +1,4 @@
-   
+ 
                                      
                             Atdgen tutorial
                             ***************
@@ -32,12 +32,13 @@ Contents
    - 9  Data validation 
    - 10  Modularity: referring to type definitions from another ATD file
    
-   - 11  Integration with ocamldoc 
-   - 12  Integration with build systems 
+   - 11  Managing JSON configuration files 
+   - 12  Integration with ocamldoc 
+   - 13  Integration with build systems 
      
         
-         - 12.0.1  OMake 
-         - 12.0.2  GNU Make 
+         - 13.0.1  OMake 
+         - 13.0.2  GNU Make 
      
   
    
@@ -374,7 +375,7 @@ fields x and y. Here is the corresponding type definition:
   type vector_v1 = { ~x: int; ~y: int }
 >>
   
-  ~x means that field x supports a default value. Since we do not
+  ~x means that field x supports a default value. Since we do not 
 specify the default value ourselves, the built-in default is used, which
 is 0.
   If we want the default to be something else than 0, we just have to
@@ -562,7 +563,7 @@ option
 >>
   
   atdgen -v will produce something equivalent to the following
-implementation:
+implementation: 
 <<
   let validate_t x =
     match x with
@@ -577,7 +578,7 @@ defined in a separate .ml file. We created the following 3 source files:
    - resume.atd: contains the type definitions with annotations 
    - resume_util.ml: contains our handwritten validators 
    - resume.ml: is our main program that creates data and calls the
-   validators 
+   validators  
   
   In terms of OCaml modules we have:
   
@@ -669,7 +670,7 @@ start_date *)
           compare_date x.start_date end_date <= 0
 >>
   
-  resume.ml uses the validate_work_experience function provided  by the
+  resume.ml uses the validate_work_experience function provided by the
 Resume_v module:
 <<
   let check_experience x =
@@ -796,7 +797,188 @@ from the
 https://github.com/MyLifeLabs/atdgen-tutorial/tree/master/modularity
   
 
-11  Integration with ocamldoc
+11  Managing JSON configuration files
+*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*
+
+  
+  JSON makes a good format for configuration files because it is
+human-readable, easy to modify programmatically and widespread. Here is
+an example of how to use atdgen to manage config files.
+  
+  
+   - Specifying defaults is done in the .atd file. See section 7 for
+   details on how to do that. 
+   - Auto-generating a template config file with default values: a
+   sample value in the OCaml world needs to be created but only fields
+   without default need to be specified. 
+   - Describing the format is achieved by embedding the .atd type
+   definitions in the OCaml program and printing it out on request. 
+   - Loading a config file and reporting illegal fields is achieved
+   using the JSON deserializers produced by atdgen -j. Option
+   -j-strict-fields ensures the misspelled field names are not ignored
+   but reported as errors. 
+   - Reindenting a config file is achieved by the pretty-printing
+   function Yojson.Safe.prettify that takes a JSON string and returns an
+   equivalent JSON string. 
+   - Showing implicit (default) settings is achieved by passing the
+   -j-defaults option to atdgen. The OCaml config data is then
+   serialized into JSON containing all fields, including those whose
+   value is the default. 
+  
+  This is our demo.sh script that builds and runs our example program
+called config: 
+<<#! /bin/sh -e
+  
+  set -x
+  
+  # Embed the contents of the .atd file into our OCaml program
+  echo 'let contents = "\' > config_atd.ml
+  sed -e 's/\([\\"]\)/\\\1/g' config.atd >> config_atd.ml
+  echo '"' >> config_atd.ml
+  
+  # Derive OCaml type definitions from .atd file
+  atdgen -t config.atd
+  
+  # Derive JSON-related functions from .atd file
+  atdgen -j -j-defaults -j-strict-fields config.atd
+  
+  # Derive validator from .atd file
+  atdgen -v config.atd
+  
+  # Compile the OCaml program
+  ocamlfind ocamlopt -o config \
+    config_t.mli config_t.ml config_j.mli config_j.ml config_v.mli
+config_v.ml \
+    config_atd.ml config.ml -package atdgen -linkpkg
+  
+  # Output a sample config
+  ./config -template
+  
+  # Print the original type definitions
+  ./config -format
+  
+  # Fail to validate an invalid config file
+  ./config -validate bad-config1.json || :
+  
+  # Validate, inject missing defaults and pretty-print
+  ./config -validate sample-config.json
+>>
+  
+  The example uses the following type definitions: 
+<<type config = {
+    title : string;
+    ?description : string option;
+    ~timeout <ocaml default="10"> : int;
+    ~credentials : param list;
+  }
+  
+  type param = {
+    name : string;
+    key : string;
+  }
+>>
+  
+  This is the hand-written OCaml program. It can be used as a start
+point for a real-world program using a JSON config file: 
+<<open Printf
+  
+  let param_template =
+    (* Sample item used to populate the template config file *)
+    {
+      Config_v.name = "foo";
+      key = "0123456789abcdef"
+    }
+  
+  let config_template =
+    (*
+      Records can be conveniently created using functions generated by
+      "atdgen -v".
+      Here we use Config_v.create_config to create a record of type
+      Config_t.config. The big advantage over creating the record 
+      directly using the record notation {...} is that we don't have to
+      specify default values (such as timeout in this example).
+    *)
+    Config_v.create_config ~title:"" ~credentials: [param_template] ()
+  
+  let make_json_template () =
+    (* Thanks to the -j-defaults flag passed to atdgen, even default
+       fields will be printed out *)
+    let compact_json = Config_j.string_of_config config_template in
+    Yojson.Safe.prettify compact_json
+  
+  let print_template () =
+    print_endline (make_json_template ())
+  
+  let print_format () =
+    print_string Config_atd.contents
+  
+  let validate fname =
+    let x =
+      try
+        (* Read config data structure from JSON file *)
+        Ag_util.Json.from_file Config_j.read_config fname
+      with e ->
+        (* Print decent error message and exit *)
+        let msg =
+          match e with
+              Failure s
+            | Yojson.Json_error s -> s
+            | e -> Printexc.to_string e
+        in
+        eprintf "Error: %s\n%!" msg;
+        exit 1
+    in
+    (* Convert config to compact JSON and pretty-print it.
+       ~std:true means that the output will not use extended syntax for
+       variants and tuples but only standard JSON. *)
+    let json = Yojson.Safe.prettify ~std:true (Config_j.string_of_config
+x) in
+    print_endline json
+  
+  type action = Template | Format | Validate of string
+  
+  let main () =
+    let action = ref Template in
+    let options = [
+      "-template", Arg.Unit (fun () -> action := Template),
+      "
+            prints a sample configuration file";
+  
+      "-format", Arg.Unit (fun () -> action := Format),
+      "
+            prints the format specification of the config files (atd
+format)";
+  
+      "-validate", Arg.String (fun s -> action := Validate s),
+      "<CONFIG FILE>
+            reads a config file, validates it, adds default values
+            and prints the config nicely to stdout";
+    ]
+    in
+    let usage_msg = sprintf "\
+  Usage: %s [-template|-format|-validate ...]
+  Demonstration of how to manage JSON configuration files with atdgen.
+  "
+      Sys.argv.(0)
+    in
+    let anon_fun s = eprintf "Invalid command parameter %S\n%!" s; exit
+1 in
+    Arg.parse options anon_fun usage_msg;
+  
+    match !action with
+        Template -> print_template ()
+      | Format -> print_format ()
+      | Validate s -> validate s
+  
+  let () = main ()
+>>
+  
+  The full source code for this section with examples can be inspected
+and downloaded here:
+https://github.com/MyLifeLabs/atdgen-tutorial/tree/master/config-file
+  
+
+12  Integration with ocamldoc
 *=*=*=*=*=*=*=*=*=*=*=*=*=*=*
 
   
@@ -805,7 +987,7 @@ uses comments within (** and *) to produce hyperlinked documentation
 (HTML) of module signatures.
   Atdgen can produce .mli files with comments in the syntax supported by
  ocamldoc but regular ATD comments within (* and *) are always discarded
-by Atdgen. Instead, <doc text="..."> must be used and placed after the 
+ by Atdgen. Instead, <doc text="..."> must be used and placed after the 
 element they describe. The contents of the text field must be
 UTF8-encoded.
 <<
@@ -827,7 +1009,7 @@ UTF8-encoded.
 >>
   
   is converted into the following .mli file with ocamldoc-compatible
-comments:
+comments: 
 <<
   (**
     Point with optional 3rd dimension.
@@ -847,16 +1029,16 @@ comments:
 >>
   
   The only two forms of markup supported by <doc text="..."> are {{ ...
-}} for inline code and {{{ ... }}} for a block of preformatted code.
+}}  for inline code and {{{ ... }}} for a block of preformatted code. 
   
 
-12  Integration with build systems
+13  Integration with build systems
 *=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=
 
   
   
 
-12.0.1  OMake
+13.0.1  OMake
 -------------
   
   We provide an Atdgen plugin (5) for OMake (6). It allows to simplify
@@ -886,7 +1068,7 @@ five source files (foo.atd, foo.ml, bar.atd, bar.ml and main.ml):
 and .ml produced by atdgen.
   
 
-12.0.2  GNU Make
+13.0.2  GNU Make
 ----------------
   
   We provide  Atdgen.mk (7), a generic makefile that defines the 
