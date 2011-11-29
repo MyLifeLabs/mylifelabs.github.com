@@ -1,0 +1,83 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html>
+<head>
+<link rel="stylesheet" href="style.css" type="text/css">
+<meta content="text/html; charset=iso-8859-1" http-equiv="Content-Type">
+<link rel="Start" href="index.html">
+<link rel="Up" href="Nproc.html">
+<link title="Index of types" rel=Appendix href="index_types.html">
+<link title="Index of values" rel=Appendix href="index_values.html">
+<link title="Index of modules" rel=Appendix href="index_modules.html">
+<link title="Nproc" rel="Chapter" href="Nproc.html"><title>Nproc.Full</title>
+</head>
+<body>
+<div class="navbar">&nbsp;<a href="Nproc.html">Up</a>
+&nbsp;</div>
+<center><h1>Module <a href="type_Nproc.Full.html">Nproc.Full</a></h1></center>
+<br>
+<pre><span class="keyword">module</span> Full: <code class="code">sig</code> <a href="Nproc.Full.html">..</a> <code class="code">end</code></pre>Fuller interface allowing requests from a worker to the master
+    and environment data residing in the workers.<br>
+<hr width="100%">
+<pre><span id="TYPEt"><span class="keyword">type</span> <code class="type">('a, 'b, 'c)</code> t</span> </pre>
+<div class="info">
+Type of a process pool.
+       The type parameters correspond to the following:<ul>
+<li><code class="code">'serv_request</code>: type of the requests from worker to master,</li>
+<li><code class="code">'serv_response</code>: type of the responses to the requests,</li>
+<li><code class="code">'env</code>: type of the environment data passed just once to each
+         worker process.</li>
+</ul>
+<br>
+</div>
+
+<pre><span id="VALcreate"><span class="keyword">val</span> create</span> : <code class="type">int -> ('a -> 'b Lwt.t) -> 'c -> ('a, 'b, 'c) <a href="Nproc.Full.html#TYPEt">t</a> * unit Lwt.t</code></pre><div class="info">
+Create a process pool.
+          <code class="code">create nproc service env</code> returns <code class="code">(ppool, lwt)</code> where
+          <code class="code">ppool</code> is pool of <code class="code">nproc</code> processes and <code class="code">lwt</code> is a
+          lightweight thread that finishes when the pool is closed.
+<p>
+
+          <code class="code">service</code> is a service which is run asynchronously by the
+          master process and can be called synchronously by the workers.
+<p>
+
+          <code class="code">env</code> is arbitrary environment data, typically large, that
+          is passed to the workers just once during their initialization.<br>
+</div>
+<pre><span id="VALclose"><span class="keyword">val</span> close</span> : <code class="type">('a, 'b, 'c) <a href="Nproc.Full.html#TYPEt">t</a> -> unit Lwt.t</code></pre><div class="info">
+Close a process pool.
+        It waits for all submitted tasks to finish.<br>
+</div>
+<pre><span id="VALsubmit"><span class="keyword">val</span> submit</span> : <code class="type">('a, 'b, 'c) <a href="Nproc.Full.html#TYPEt">t</a> -><br>       f:(('a -> 'b) -> 'c -> 'd -> 'e) -> 'd -> 'e option Lwt.t</code></pre><div class="info">
+Submit a task.
+        <code class="code">submit ppool ~f x</code> passes <code class="code">f</code> and <code class="code">x</code> to one of the worker processes,
+        which computes <code class="code">f service env x</code> and passes the result back
+        to the master process,
+        i.e. to the calling process running the Lwt event loop.
+<p>
+
+        The current implementation uses the Marshal module to serialize
+        and deserialize <code class="code">f</code>, its input and its output.<br>
+</div>
+<pre><span id="VALiter_stream"><span class="keyword">val</span> iter_stream</span> : <code class="type">?granularity:int -><br>       nproc:int -><br>       serv:('a -> 'b Lwt.t) -><br>       env:'c -><br>       f:(('a -> 'b) -> 'c -> 'd -> 'e) -><br>       g:('e option -> unit) -> 'd Stream.t -> unit</code></pre><div class="info">
+Iterate over a stream using a pool of 
+       <code class="code">nproc</code> worker processes running in parallel.
+<p>
+
+       <code class="code">iter_stream</code> runs the Lwt event loop internally. It is intended
+       for programs that do not use Lwt otherwise.
+<p>
+
+       Function <code class="code">f</code> runs in the worker processes. It is applied to elements 
+       of the stream that it receives from the master process.
+       Function <code class="code">g</code> is applied to the result of <code class="code">f</code> in the master process.
+<p>
+
+       The current implementation uses the Marshal module to serialize
+       and deserialize <code class="code">f</code>, its inputs (stream elements) and its outputs.
+       <code class="code">f</code> is serialized as many times as there are elements in the stream.
+       If <code class="code">f</code> relies on a large immutable data structure, it should be
+       putting into <code class="code">env</code> in order to avoid costly and
+       repetitive serialization of that data.<br>
+</div>
+</body></html>
