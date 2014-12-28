@@ -1,1 +1,1 @@
-This the content served by http://mylifelabs.github.com
+This the content served by https://mylifelabs.github.io
